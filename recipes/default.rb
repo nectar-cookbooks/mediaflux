@@ -163,6 +163,6 @@ bash "copy-license" do
   not_if { ::File.exists?("#{mflux_home}/config/license.xml") }
 end
 
-service mediaflux do
+service "mediaflux" do
   action [ :enable, :start ]
 end
