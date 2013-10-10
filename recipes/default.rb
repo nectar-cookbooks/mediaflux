@@ -35,9 +35,9 @@ mflux_user_home = node['mediaflux']['user_home']
 mflux_fs = node['mediaflux']['fs']
 url = node['mediaflux']['installer_url']
 
-# Can we find a license file?
-have_license = ::File.exists?("#{mflux_home}/config/license.xml") ||
-   ::File.exists?("#{mflux_user_home}/license.xml")
+# Can we find a licence file?
+have_licence = ::File.exists?("#{mflux_home}/config/licence.xml") ||
+   ::File.exists?("#{mflux_user_home}/licence.xml")
 
 user mflux_user do
   comment "MediaFlux service"
@@ -150,10 +150,10 @@ template "/etc/init.d/mediaflux" do
   })
 end
 
-if ! have_license
-  # This is as far as we can go without a license file ... 
-  log "Please copy your MediaFlux license file to " +
-      "#{mflux_home}/config/license.xml and then rerun this recipe" do
+if ! have_licence
+  # This is as far as we can go without a licence file ... 
+  log "Please copy your MediaFlux licence file to " +
+      "#{mflux_home}/config/licence.xml and then rerun this recipe" do
     level :fatal
   end
   ruby_block "bail-out" do
@@ -163,12 +163,12 @@ if ! have_license
   end
 end
 
-# Install license file if it isn't already installed
-bash "copy-license" do
-  code "cp #{mflux_user_home}/license.xml #{mflux_home}/config/license.xml" +
-       " && chmod 444 #{mflux_home}/config/license.xml"
-  creates "#{mflux_home}/config/license.xml"
-  not_if { ::File.exists?("#{mflux_home}/config/license.xml") }
+# Install licence file if it isn't already installed
+bash "copy-licence" do
+  code "cp #{mflux_user_home}/licence.xml #{mflux_home}/config/licence.xml" +
+       " && chmod 444 #{mflux_home}/config/licence.xml"
+  creates "#{mflux_home}/config/licence.xml"
+  not_if { ::File.exists?("#{mflux_home}/config/licence.xml") }
 end
 
 service "mediaflux" do
