@@ -153,7 +153,7 @@ if ! have_license
       "#{mflux_home}/config/license.xml and then rerun this recipe" do
     level :fatal
   end
-  ruby "bail-out" do
+  ruby_block "bail-out" do
     block do 
       raise "Bailing out - see previous log message"
     end
