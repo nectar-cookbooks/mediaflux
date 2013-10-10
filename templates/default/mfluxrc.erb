@@ -1,0 +1,10 @@
+export MFLUX_HOME=/opt/mflux
+export MFLUX_HOST=`hostname`
+export MFLUX_PORT=8443
+export MFLUX_TRANSPORT=HTTPS
+export MFLUX_DOMAIN=system
+export MFLUX_USER=manager
+export MFLUX_PASSWORD_ENC=<%= @admin_password %>
+export MFLUX_UMASK=0007
+# For sink file system access
+umask 0007
