@@ -35,6 +35,10 @@ mflux_user_home = node['mediaflux']['user_home']
 mflux_fs = node['mediaflux']['fs']
 url = node['mediaflux']['installer_url']
 
+# Can we find a license file?
+have_license = ::File.exists?("#{mflux_home}/config/license.xml") ||
+   ::File.exists?("#{mflux_user_home}/license.xml")
+
 user mflux_user do
   comment "MediaFlux service"
   system true
@@ -52,10 +56,6 @@ end
 
 directory "#{mflux_user_home}/bin" do
   owner mflux_user
-end
-
-log "url is #{url}" do
-  level :debug
 end
 
 if url == 'unset' || url == 'change-me' 
@@ -147,13 +147,22 @@ template "/etc/init.d/mediaflux" do
   })
 end
 
-if ::File.exists?("#{mflux_home}/config/license.xml")
-  service mediaflux do
-    action [ :enable, :start ]
-  end
-else
+if ! have_license
+  # This is as far as we can go without a license file ... 
   log "Please copy your MediaFlux license file to " +
       "#{mflux_home}/config/license.xml and then rerun this recipe"
-    level :error
+    level :fatal
   end
+end
+
+# Install license file if it isn't already installed
+bash "copy-license" do
+  code "cp #{mflux_user_home}/license.xml #{mflux_home}/config/license.xml" +
+       " && chmod 444 #{mflux_home}/config/license.xml"
+  creates "#{mflux_home}/config/license.xml"
+  not_if { ::File.exists?("#{mflux_home}/config/license.xml") }
+end
+
+service mediaflux do
+  action [ :enable, :start ]
 end
