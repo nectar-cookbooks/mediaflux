@@ -106,7 +106,10 @@ template "#{mflux_user_home}/.mfluxrc" do
   mode 0600
   source "mfluxrc.erb"
   variables({
-    :admin_password => node['mediaflux']['admin_password']
+    :mflux_home => mflux_home,
+    :admin_password => node['mediaflux']['admin_password'],
+    :http_port => node['mediaflux']['http_port'],
+    :https_port => node['mediaflux']['https_port']
   })
 end
 
