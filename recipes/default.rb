@@ -147,11 +147,14 @@ template "/etc/init.d/mediaflux" do
   })
 end
 
-if ! have_license
+if have_license
   # This is as far as we can go without a license file ... 
   log "Please copy your MediaFlux license file to " +
       "#{mflux_home}/config/license.xml and then rerun this recipe" do
     level :fatal
+  end
+  ruby "bail-out" do
+    raise "Bailing out - see previous log message"
   end
 end
 
