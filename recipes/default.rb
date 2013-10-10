@@ -154,7 +154,9 @@ if ! have_license
     level :fatal
   end
   ruby "bail-out" do
-    raise "Bailing out - see previous log message"
+    block do 
+      raise "Bailing out - see previous log message"
+    end
   end
 end
 
