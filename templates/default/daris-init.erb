@@ -81,7 +81,7 @@ AUTHEN=$MFLUX_DOMAIN,$MFLUX_USER,$MFLUX_PASSWORD
 start() {
     echo "Starting $PROG. Check log files for status."
     if [[ $EUID -eq 0 ]]; then
-        su -c "umask $MFLUX_UMASK; java -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -l $MFLUX_SYSTEM_USER 
+        su -c "umask $MFLUX_UMASK; java -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -s /bin/sh -l $MFLUX_SYSTEM_USER 
     else
         umask $MFLUX_UMASK; java -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log&  
     fi
@@ -93,7 +93,7 @@ start() {
 stop() {
     echo "Stopping $PROG.."
     if [[ $EUID -eq 0 ]]; then
-        su -c "java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate" -l $MFLUX_SYSTEM_USER
+        su -c "java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate" -s /bin/sh -l $MFLUX_SYSTEM_USER
     else
         java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate  
     fi
@@ -105,7 +105,7 @@ stop() {
 status() {
     echo "Checking status of $PROG.."
     if [[ $EUID -eq 0 ]]; then
-        su -c "java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status" -l $MFLUX_SYSTEM_USER
+        su -c "java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status" -s /bin/sh -l $MFLUX_SYSTEM_USER
     else
         java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status
     fi
