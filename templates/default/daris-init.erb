@@ -69,8 +69,8 @@ PROG=Mediaflux
 #
 AUTHEN=$MFLUX_DOMAIN,$MFLUX_USER,$MFLUX_PASSWORD
 
-<% if @run_as_root || -a @mflux_user == "root" %>
-DROP_PRIVILEGE=1
+<% if @run_as_root || @mflux_user == "root" %>
+DROP_PRIVILEGE=0
 <% else %>
 if [[ $EUID -eq 0 ]]; then
   DROP_PRIVILEGE=1
