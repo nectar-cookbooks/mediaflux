@@ -151,6 +151,15 @@ template "/etc/init.d/mediaflux" do
   })
 end
 
+template "#{mflux_user_home}/bin/aterm" do 
+  owner mflux_user
+  mode 0755
+  source "aterm.erb"
+  variables({
+    :mflux_home => mflux_home
+  })
+end
+
 if ! have_licence
   # This is as far as we can go without a licence file ... 
   log "Please copy your MediaFlux licence file to " +
