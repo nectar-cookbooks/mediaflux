@@ -12,8 +12,10 @@ node.default['mediaflux']['installer_url'] = 'unset'
 node.default['mediaflux']['admin_password'] = 'Y2hhbmdlX21lCg=='
 
 # If either of these is unset then the corresponding service endpoint
-# is not enabled.
-node.default['mediaflux']['http_port'] = '80'
+# is not enabled.  Note that we default to using "high" ports because of
+# the difficulty of getting a non-root Java application to bind to a 
+# privileged port.
+node.default['mediaflux']['http_port'] = '8080'
 node.default['mediaflux']['https_port'] = '8443'
 
 node.normal['java']['install_flavor'] = 'openjdk'
