@@ -17,6 +17,7 @@ node.default['mediaflux']['admin_password'] = 'Y2hhbmdlX21lCg=='
 # privileged port.
 node.default['mediaflux']['http_port'] = '8080'
 node.default['mediaflux']['https_port'] = '8443'
+node.default['mediaflux']['run_as_root'] = false
 
 node.normal['java']['install_flavor'] = 'openjdk'
 node.normal['java']['jdk_version'] = '7'

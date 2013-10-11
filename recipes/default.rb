@@ -109,7 +109,8 @@ template "#{mflux_user_home}/.mfluxrc" do
     :mflux_home => mflux_home,
     :admin_password => node['mediaflux']['admin_password'],
     :http_port => node['mediaflux']['http_port'],
-    :https_port => node['mediaflux']['https_port']
+    :https_port => node['mediaflux']['https_port'],
+    :run_as_root => node['mediaflux']['run_as_root']
   })
 end
 
