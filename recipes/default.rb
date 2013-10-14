@@ -137,6 +137,12 @@ template "#{mflux_home}/config/services/network.tcl" do
   })
 end
 
+cookbook_file "#{mflux_user_home}/bin/mfcommand" do 
+  owner mflux_user
+  mode 0755
+  source "mfcommand.sh"
+end
+
 cookbook_file "#{mflux_user_home}/bin/mediaflux" do 
   owner mflux_user
   mode 0750
