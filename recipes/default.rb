@@ -135,13 +135,13 @@ end
 cookbook_file "#{mflux_user_home}/bin/mediaflux" do 
   owner mflux_user
   mode 0750
-  path "mediaflux-init.sh"
+  source "mediaflux-init.sh"
 end
 
 cookbook_file "/etc/init.d/mediaflux" do 
   owner "root"
   mode 0750
-  path "mediaflux-init.sh"
+  source "mediaflux-init.sh"
 end
 
 template "#{mflux_user_home}/bin/aterm" do 
