@@ -33,15 +33,13 @@
 #   MFLUX_DOMAIN     - the logon domain for this script
 #   MFLUX_USER       - the logon user for this script
 #   MFLUX_PASSWORD   - the logon password for this script
-#   MFLUX_TRANSPORT  - the network transport type. One of: [http,tcpip]
+#   MFLUX_TRANSPORT  - the network transport type. One of: [http,https,tcpip]
 #   MFLUX_PORT       - the network connection port
 #
 
 if [ -e /etc/mediaflux/servicerc ] ; then
     . /etc/mediaflux/servicerc
 fi
-
-MFLUX_PASSWORD=`echo $MFLUX_PASSWORD_ENC | base64 -d`
 
 # Test if our configuration is valid
 test -s ${MFLUX_HOME}/bin/aserver.jar || {

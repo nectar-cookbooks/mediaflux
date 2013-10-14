@@ -2,16 +2,16 @@ Overview
 ========
 
 This cookbook is for installing and doing the initial configuration of a
-MediaFlux instance.  The prerequisites are the installation files 
-for MediaFlux,and a current license key file for MediaFlux:
+Mediaflux instance.  The prerequisites are the installation files 
+for Mediaflux,and a current license key file for Mediaflux:
 
-  - The MediaFlux installation JAR file and license key should be obtained
+  - The Mediaflux installation JAR file and license key should be obtained
     from Architecta (or SGI who distribute it as "LiveArc").
 
 Dependencies
 ============
 
-MediaFlux is a Java application, and this cookbook uses the OpenJDK Java 7 JDK
+Mediaflux is a Java application, and this cookbook uses the OpenJDK Java 7 JDK
 to fulfill this dependency.  If you want to, you can set node attributes to
 override the defaults; see the http://community.opscode.com/cookbooks/java for
 the relevant attributes
@@ -26,13 +26,13 @@ Attributes
 See `attributes/default.rb` for the default values.
 
 * `node['mediaflux']['home']` - Specifies the installation directory for Mediaflux.
-* `node['mediaflux']['user']` - Specifies the MediaFlux system username.
-* `node['mediaflux']['user_home']` - Specified the MediaFlux system user's home directory.
+* `node['mediaflux']['user']` - Specifies the Mediaflux system username.
+* `node['mediaflux']['user_home']` - Specified the Mediaflux system user's home directory.
 * `node['mediaflux']['fs']` - Specifies a data directory for the Mediaflux server.  If this directory exists, the recipe will make the Mediaflux "volatile" directory a symlink to this one, and populate it with the required subdirectories.
 * `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installer.  By default this is "unset", and the recipe will assume that you have obtained and placed the installer in "#{node['mediaflux']['home']}/installer.jar".
-* `node['mediaflux']['admin_password']` - Specifies the initial "encrypted" MediaFlux administrator password.  The `DaRIS installation instructions explain how to encrypt a password, and how to change the password post-installation.
-* `node.default['mediaflux']['http_port']` - Specifies the port for the MediaFlux server's http listener.  If unset, the server won't start an http listener.
-* `node.default['mediaflux']['https_port']` - Specifies the port for the MediaFlux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.
+* `node['mediaflux']['admin_password']` - Specifies the initial "encrypted" Mediaflux administrator password.  The `DaRIS installation instructions explain how to encrypt a password, and how to change the password post-installation.
+* `node.default['mediaflux']['http_port']` - Specifies the port for the Mediaflux server's http listener.  If unset, the server won't start an http listener.
+* `node.default['mediaflux']['https_port']` - Specifies the port for the Mediaflux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.
 * `node.default['mediaflux']['run_as_root']` - If "true", the server will be run as "root" allowing it to bind to the normal HTTP / HTTPS ports.
 
 Configuring the ports
@@ -64,6 +64,48 @@ you have the following choices:
 * Ignore the security concerns, and set the "run_as_root" attribute to "true".
   This approach is not recommmended!
 
+Security issues
+===============
+
+The Mediaflux admin password is stored in the "/etc/mediaflux/servicerc" 
+file.  This file should be readable only by "root" and the mediaflux user /
+group.  (The "mediaflux::default" Chef recipe will return it to that state 
+whenever you run it.)
+
+You could take further steps to secure the password.  However, note that 
+obfuscating or encrypting with a hard-wired key only gives the illusion of
+security ... if the attacker can gain root access to the machine.
+
+
+Differences from standard Mediaflux
+===================================
+
+* The standard Mediaflux installation assumes that the mediaflux user's home
+  directory and the installation directory are the same.  With this recipe, 
+  they default to different locations.
+
+* In a standard Mediaflux installation, the mediaflux init script reads config
+  variables from /etc/mediaflux.  With this recipe, /etc/mediaflux is a 
+  directory, and the variables are defined in /etc/mediaflux/mfluxrc
+  and /etc/mediaflux/servicerc.
+
+* In a standard Mediaflux installation, there is no "aterm" wrapper.
+
+* In a standard Mediaflux installation, the "mfcommand" wrapper doesn't use an
+  "rc" file to pick up configuration variables.
+
+* In a standard Mediaflux installation, the server is launched as "root".  
+  With this recipe, the default behaviour is to launch as the Mediaflux user.
+
+Differences from DaRIS Mediaflux
+================================
+
+* In a DaRIS Mediaflux installation (i.e. when you follow the DaRIS 
+  installation instructions), the init script reads the ".mfluxrc" file in
+  the Mediaflux user's home directory.  This is a potential security hole.
+
+* In a DaRIS Mediaflux installation, the admin password is obfuscated by
+  base64 encoding it.  This only gives an illusion of security.
 
 TO-DO LIST
 ==========

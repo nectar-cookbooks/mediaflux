@@ -9,7 +9,7 @@ node.default['mediaflux']['fs'] = '/data'          # separate data directory
 node.default['mediaflux']['installer_url'] = 'unset'
 
 # This is the default password as per the mediaflux installation guide ...
-node.default['mediaflux']['admin_password'] = 'Y2hhbmdlX21lCg=='
+node.default['mediaflux']['admin_password'] = 'change_me'
 
 # If either of these is unset then the corresponding service endpoint
 # is not enabled.  Note that we default to using "high" ports because of
