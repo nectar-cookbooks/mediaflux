@@ -37,14 +37,9 @@
 #   MFLUX_PORT       - the network connection port
 #
 
-# . /etc/mediaflux
-
-
-MFLUX_SYSTEM_USER=<%= @mflux_user %>
-
-MFLUX_SYSTEM_USER_HOME=<%= @mflux_user_home %>
-
-. ${MFLUX_SYSTEM_USER_HOME}/.mfluxrc
+if [ -e /etc/mediaflux ] ; then
+    . /etc/mediaflux
+fi
 
 MFLUX_PASSWORD=`echo $MFLUX_PASSWORD_ENC | base64 -d`
 
@@ -69,15 +64,13 @@ PROG=Mediaflux
 #
 AUTHEN=$MFLUX_DOMAIN,$MFLUX_USER,$MFLUX_PASSWORD
 
-<% if @run_as_root || @mflux_user == "root" %>
-DROP_PRIVILEGE=0
-<% else %>
-if [[ $EUID -eq 0 ]]; then
+if [ $MFLUX_RUN_AS_ROOT -eq 1 -o $MFLUX_SYSTEM_USER == "root" ] ; then
+  DROP_PRIVILEGE=0
+elif [[ $EUID -eq 0 ]]; then
   DROP_PRIVILEGE=1
 else
   DROP_PRIVILEGE=0
 fi
-<% end %>
 
 # Uncomment (or set) the following line (and set a preferred debug port) to
 # enable remote attachment to the server using a Java debugger.

@@ -100,12 +100,13 @@ end
   end
 end
 
-# Ermm ... there's a security issue with putting the "rc" file here ...
-template "#{mflux_user_home}/.mfluxrc" do 
-  owner mflux_user
-  mode 0600
+template "/etc/mediaflux" do 
+  owner "root"
+  group mflux_user
+  mode 0440
   source "mfluxrc.erb"
   variables({
+    :mflux_user => mflux_user,
     :mflux_home => mflux_home,
     :admin_password => node['mediaflux']['admin_password'],
     :http_port => node['mediaflux']['http_port'],
@@ -131,24 +132,16 @@ template "#{mflux_home}/config/services/network.tcl" do
   })
 end
 
-template "#{mflux_user_home}/bin/mediaflux" do 
+cookbook_file "#{mflux_user_home}/bin/mediaflux" do 
   owner mflux_user
-  mode 0755
-  source "daris-init.erb"
-  variables({
-    :mflux_user => mflux_user,
-    :mflux_user_home => mflux_user_home
-  })
+  mode 0750
+  path "mediaflux-init.sh"
 end
 
-template "/etc/init.d/mediaflux" do 
+cookbook_file "/etc/init.d/mediaflux" do 
   owner "root"
-  mode 0755
-  source "daris-init.erb"
-  variables({
-    :mflux_user => mflux_user,
-    :mflux_user_home => mflux_user_home
-  })
+  mode 0750
+  source "mediaflux-init.sh"
 end
 
 template "#{mflux_user_home}/bin/aterm" do 
