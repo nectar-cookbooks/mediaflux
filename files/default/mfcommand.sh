@@ -1,8 +1,8 @@
 #!/bin/sh
 # file name mfcommand
 
-if [ -e /etc/mediaflux -a -r /etc/mediaflux ] ; then
-    . /etc/mediaflux
+if [ -e /etc/mediaflux/mfluxrc -a -r /etc/mediaflux/mfluxrc ] ; then
+    . /etc/mediaflux/mfluxrc
 fi
 
 if [ -e $HOME/.mfluxrc ] ; then

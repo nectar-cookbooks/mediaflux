@@ -37,8 +37,8 @@
 #   MFLUX_PORT       - the network connection port
 #
 
-if [ -e /etc/mediaflux ] ; then
-    . /etc/mediaflux
+if [ -e /etc/mediaflux/servicerc ] ; then
+    . /etc/mediaflux/servicerc
 fi
 
 MFLUX_PASSWORD=`echo $MFLUX_PASSWORD_ENC | base64 -d`
