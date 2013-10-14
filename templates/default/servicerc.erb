@@ -1,0 +1,9 @@
+. /etc/mediaflux/mfluxrc
+
+export MFLUX_DOMAIN=system
+export MFLUX_USER=manager
+export MFLUX_PASSWORD_ENC=<%= @admin_password %>
+export MFLUX_RUN_AS_ROOT=<%= if @run_as_root then "1" else "0" end %>
+export MFLUX_UMASK=0007
+# For sink file system access
+umask 0007

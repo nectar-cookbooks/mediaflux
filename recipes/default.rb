@@ -53,14 +53,22 @@ end
 
 directory mflux_home do
   owner mflux_user
+  mode 0755
 end
 
 directory mflux_user_home do
   owner mflux_user
+  mode 0755
 end
 
 directory "#{mflux_user_home}/bin" do
   owner mflux_user
+  mode 0755
+end
+
+directory "/etc/mediaflux" do
+  owner "root"
+  mode 0755
 end
 
 if url == 'unset' || url == 'change-me' 
@@ -105,17 +113,26 @@ end
   end
 end
 
-template "/etc/mediaflux" do 
+template "/etc/mediaflux/mfluxrc" do 
   owner "root"
   group mflux_user
-  mode 0440
+  mode 0444
   source "mfluxrc.erb"
   variables({
     :mflux_user => mflux_user,
     :mflux_home => mflux_home,
-    :admin_password => node['mediaflux']['admin_password'],
     :http_port => node['mediaflux']['http_port'],
-    :https_port => node['mediaflux']['https_port'],
+    :https_port => node['mediaflux']['https_port']
+  })
+end
+
+template "/etc/mediaflux/servicerc" do 
+  owner "root"
+  group mflux_user
+  mode 0440
+  source "servicerc.erb"
+  variables({
+    :admin_password => node['mediaflux']['admin_password'],
     :run_as_root => node['mediaflux']['run_as_root']
   })
 end
