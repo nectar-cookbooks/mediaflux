@@ -39,6 +39,11 @@ url = node['mediaflux']['installer_url']
 have_licence = ::File.exists?("#{mflux_home}/config/licence.xml") ||
    ::File.exists?("#{mflux_user_home}/licence.xml")
 
+# This is required to run 'aterm' on a headless machine / virtual
+package "xauth" do
+  action :install
+end
+
 user mflux_user do
   comment "MediaFlux service"
   system true
