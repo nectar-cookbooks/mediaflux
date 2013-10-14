@@ -127,6 +127,7 @@ template "/etc/mediaflux/mfluxrc" do
 end
 
 template "/etc/mediaflux/servicerc" do 
+  action :create_if_missing
   owner "root"
   group mflux_user
   mode 0440
