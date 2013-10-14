@@ -115,3 +115,5 @@ resource that is being added to the standard "openssl" cookbook in
 https://tickets.opscode.com/browse/COOK-847.
 
 * We currently assume that the 'java' on the PATH is the right one to use.
+
+* Write a recipe for configuring email (?)

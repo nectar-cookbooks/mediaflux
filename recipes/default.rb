@@ -210,5 +210,5 @@ bash "copy-licence" do
 end
 
 service "mediaflux" do
-  action [ :enable, :start ]
+  action [ :enable, :restart ]
 end
