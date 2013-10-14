@@ -138,6 +138,12 @@ template "/etc/mediaflux/servicerc" do
   })
 end
 
+# Just in case someone has editted the file and gotten the access wrong.
+bash "fix-permissions" do
+  code "chown root:#{mflux_user} /etc/mediaflux/servicerc && " +
+       "chmod 0440 /etc/mediaflux/servicerc"
+end
+
 template "#{mflux_home}/config/database/database.tcl" do 
   owner mflux_user
   source "database-tcl.erb"
