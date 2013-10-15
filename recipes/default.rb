@@ -35,9 +35,15 @@ mflux_user_home = node['mediaflux']['user_home']
 mflux_fs = node['mediaflux']['fs']
 url = node['mediaflux']['installer_url']
 
+# This is where we look for installers and license key files ...
+installers = node['mediaflux']['installers']
+if ! installers.start_with?('/') then
+  installers = mflux_user_home + '/' + installers
+end
+
 # Can we find a licence file?
 have_licence = ::File.exists?("#{mflux_home}/config/licence.xml") ||
-   ::File.exists?("#{mflux_user_home}/licence.xml")
+   ::File.exists?("#{installers}/licence.xml")
 
 # This is required to run 'aterm' on a headless machine / virtual
 package "xauth" do
@@ -71,8 +77,13 @@ directory "/etc/mediaflux" do
   mode 0755
 end
 
+directory installers do
+  owner mflux_user
+  mode 0750
+end
+
 if url == 'unset' || url == 'change-me' 
-  if ! ::File.exists?("#{mflux_home}/installer.jar")
+  if ! ::File.exists?("#{installers}/#{installer}")
     log 'You must either download the installer by hand' + 
         ' or set the mediaflux.installer_url attribute' do
       level :fatal
@@ -80,9 +91,9 @@ if url == 'unset' || url == 'change-me'
     return
   end
 else
-  remote_file "#{mflux_home}/installer.jar" do
+  remote_file "#{installers}/#{installer}" do
     action :create_if_missing
-    source url
+    source "#{url}/#{installer}"
   end
 end
 
@@ -90,7 +101,7 @@ bash "install-mediaflux" do
   not_if { ::File.exists?("#{mflux_home}/PACKAGE.MF") }
   user mflux_user
   code <<-EOH
-java -jar #{mflux_home}/installer.jar nogui << EOF
+java -jar #{installers}/#{installer} nogui << EOF
 accept
 #{mflux_home}
 EOF
@@ -203,7 +214,7 @@ end
 
 # Install licence file if it isn't already installed
 bash "copy-licence" do
-  code "cp #{mflux_user_home}/licence.xml #{mflux_home}/config/licence.xml" +
+  code "cp #{installers}/licence.xml #{mflux_home}/config/licence.xml" +
        " && chmod 444 #{mflux_home}/config/licence.xml"
   creates "#{mflux_home}/config/licence.xml"
   not_if { ::File.exists?("#{mflux_home}/config/licence.xml") }

@@ -3,6 +3,10 @@ node.default['mediaflux']['user'] = 'mflux'        # system user ... and home
 node.default['mediaflux']['user_home'] = '/usr/local/mediaflux'
 node.default['mediaflux']['fs'] = '/data'          # separate data directory
 
+node.default['mediaflux']['installers'] = 'installers'
+
+node.default['mediaflux']['installer'] = 'mflux-dev_3.8.038_jvm_1.6.jar' 
+
 # This should be overridden in the node or role definitions.  If it is
 # left "unset" then the recipe assumes that the installer has already been
 # downloaded and placed in the installation directory as "installer.jar"

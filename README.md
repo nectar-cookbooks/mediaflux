@@ -29,7 +29,9 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['user']` - Specifies the Mediaflux system username.
 * `node['mediaflux']['user_home']` - Specified the Mediaflux system user's home directory.
 * `node['mediaflux']['fs']` - Specifies a data directory for the Mediaflux server.  If this directory exists, the recipe will make the Mediaflux "volatile" directory a symlink to this one, and populate it with the required subdirectories.
-* `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installer.  By default this is "unset", and the recipe will assume that you have obtained and placed the installer in "#{node['mediaflux']['home']}/installer.jar".
+* `node['mediaflux']['installers']` - Specifies a local directory where the recipes will look for downloaded installers and license files.
+* `node['mediaflux']['installer']` - Specifies the (simple) filename for the Mediaflux installer.
+* `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installers.  By default this is "unset", and the recipe will assume that you have obtained and placed the installer in the 'installers' directory.
 * `node['mediaflux']['admin_password']` - Specifies the initial "encrypted" Mediaflux administrator password.  The `DaRIS installation instructions explain how to encrypt a password, and how to change the password post-installation.
 * `node.default['mediaflux']['http_port']` - Specifies the port for the Mediaflux server's http listener.  If unset, the server won't start an http listener.
 * `node.default['mediaflux']['https_port']` - Specifies the port for the Mediaflux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.
