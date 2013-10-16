@@ -32,9 +32,9 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['installers']` - Specifies a local directory where the recipes will look for downloaded installers and license files.
 * `node['mediaflux']['installer']` - Specifies the (simple) filename for the Mediaflux installer.
 * `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installers.  By default this is "unset", and the recipe will assume that you have obtained and placed the installer in the 'installers' directory.
-* `node['mediaflux']['admin_password']` - Specifies the initial "encrypted" Mediaflux administrator password.  The `DaRIS installation instructions explain how to encrypt a password, and how to change the password post-installation.
+* `node['mediaflux']['admin_password']` - Specifies the initial Mediaflux administrator password.  The DaRIS installation instructions explain how to encrypt a password, and how to change the password post-installation.
 * `node.default['mediaflux']['http_port']` - Specifies the port for the Mediaflux server's http listener.  If unset, the server won't start an http listener.
-* `node.default['mediaflux']['https_port']` - Specifies the port for the Mediaflux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.
+* `node.default['mediaflux']['https_port']` - Specifies the port for the Mediaflux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.  The recipe will bail out if a certificate is required and none is available; e.g. in the 'installers' directory.
 * `node.default['mediaflux']['run_as_root']` - If "true", the server will be run as "root" allowing it to bind to the normal HTTP / HTTPS ports.
 
 Configuring the ports
@@ -118,4 +118,5 @@ https://tickets.opscode.com/browse/COOK-847.
 
 * We currently assume that the 'java' on the PATH is the right one to use.
 
-* Write a recipe for configuring email (?)
+* Support for re-install, including attempting to recover and use the current sysystem password.  (For now, we need to manually blow away the /etc/mediaflux/systemrc file, install with the default password, and then manually reset it using the procedure in the DaRIS wiki.)
+
