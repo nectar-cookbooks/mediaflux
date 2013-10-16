@@ -245,7 +245,7 @@ end
 if have_certs then
   bash "copy-certs" do
     code "cp #{installers}/certs #{mflux_home}/config/certs" +
-         " && chmod 444 #{mflux_home}/config/certs
+         " && chmod 444 #{mflux_home}/config/certs"
     creates "#{mflux_home}/config/certs"
     not_if { ::File.exists?("#{mflux_home}/config/certs") }
   end
