@@ -228,7 +228,7 @@ end
 # This is a bit crude, but following recipes may require that the 
 # Mediaflux service is 'up'.  
 bash "mediaflux-listening" do
-  user root
+  user mflux_user
   code ". /etc/mediaflux/mfluxrc ; " +
        "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
        "    --retry-connrefused --no-check-certificate -O /dev/null " +
