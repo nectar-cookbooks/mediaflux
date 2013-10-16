@@ -40,6 +40,7 @@ installers = node['mediaflux']['installers']
 if ! installers.start_with?('/') then
   installers = mflux_user_home + '/' + installers
 end
+installer = node['mediaflux']['installer']
 
 # Can we find a licence file?
 have_licence = ::File.exists?("#{mflux_home}/config/licence.xml") ||
