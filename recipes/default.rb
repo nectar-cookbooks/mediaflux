@@ -222,7 +222,7 @@ bash "copy-licence" do
 end
 
 service "mediaflux" do
-  action [ :enable, :restart, :immediately ]
+  action [ :enable, :restart ]
 end
 
 # This is a bit crude, but following recipes may require that the 
