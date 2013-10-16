@@ -18,7 +18,8 @@ node.default['mediaflux']['admin_password'] = 'change_me'
 # If either of these is unset then the corresponding service endpoint
 # is not enabled.  Note that we default to using "high" ports because of
 # the difficulty of getting a non-root Java application to bind to a 
-# privileged port.
+# privileged port.  Setting either port to an empty string will disable
+# the corresponding transport
 node.default['mediaflux']['http_port'] = '8080'
 node.default['mediaflux']['https_port'] = '8443'
 node.default['mediaflux']['run_as_root'] = false

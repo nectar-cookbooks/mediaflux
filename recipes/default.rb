@@ -46,6 +46,13 @@ installer = node['mediaflux']['installer']
 have_licence = ::File.exists?("#{mflux_home}/config/licence.xml") ||
    ::File.exists?("#{installers}/licence.xml")
 
+# Can we find an SSL cert file?
+have_certs = ::File.exists?("#{mflux_home}/config/certs") ||
+   ::File.exists?("#{installers}/certs")
+
+# Do we need an SSL cert file?
+need_certs = node['mediaflux']['https_port'] != ''
+
 # This is required to run 'aterm' on a headless machine / virtual
 package "xauth" do
   action :install
@@ -200,15 +207,28 @@ template "#{mflux_user_home}/bin/aterm" do
   })
 end
 
-if ! have_licence
+if ! have_licence then
   # This is as far as we can go without a licence file ... 
-  log "Please copy your MediaFlux licence file to " +
-      "#{mflux_home}/config/licence.xml and then rerun this recipe" do
+  log "Please place a copy of your MediaFlux licence file in " +
+      "#{mflux_user_home}/installers/licence.xml and then rerun this recipe" do
     level :fatal
   end
   ruby_block "bail-out" do
     block do 
-      raise "Bailing out - see previous log message"
+      raise "Bailing out - see previous 'fatal' log message"
+    end
+  end
+end
+
+if ! have_certs && need_certs then
+  log "Please create or obtain an SSL certificate, and copy it to " +
+      "#{mflux_user_home}/installers/certs and then rerun this recipe. " +
+      "(A self-signed certificate will do ... for now.)" do
+    level :fatal
+  end
+  ruby_block "bail-out" do
+    block do 
+      raise "Bailing out - see previous 'fatal' log message"
     end
   end
 end
@@ -219,6 +239,16 @@ bash "copy-licence" do
        " && chmod 444 #{mflux_home}/config/licence.xml"
   creates "#{mflux_home}/config/licence.xml"
   not_if { ::File.exists?("#{mflux_home}/config/licence.xml") }
+end
+
+# Install SSL cert if it isn't already installed
+if have_certs then
+  bash "copy-certs" do
+    code "cp #{installers}/certs #{mflux_home}/config/certs" +
+         " && chmod 444 #{mflux_home}/config/certs
+    creates "#{mflux_home}/config/certs"
+    not_if { ::File.exists?("#{mflux_home}/config/certs") }
+  end
 end
 
 service "mediaflux" do
