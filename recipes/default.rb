@@ -251,7 +251,13 @@ if have_certs then
   end
 end
 
+# The 'defer_start' hack allows another recipe that it needs to do stuff
+# before the mediaflux service is started.
 service "mediaflux" do
-  action [ :enable, :restart ]
+  action if node['mediaflux']['defer_start'] then
+            [ :enable, :restart ]
+         else
+            [ :enable ]
+         end
 end
 
