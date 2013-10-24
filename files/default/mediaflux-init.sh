@@ -82,9 +82,9 @@ fi
 start() {
     echo "Starting $PROG. Check log files for status."
     if [[ $DROP_PRIVILEGE -eq 1 ]]; then
-        su -c "umask $MFLUX_UMASK; java -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -s /bin/sh -l $MFLUX_SYSTEM_USER 
+        su -c "umask $MFLUX_UMASK; java -Djava.net.preferIPv4Stack=true -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -s /bin/sh -l $MFLUX_SYSTEM_USER 
     else
-        umask $MFLUX_UMASK; java -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log&  
+        umask $MFLUX_UMASK; java -Djava.net.preferIPv4Stack=true -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log&  
     fi
     RETVAL=$?
 }
