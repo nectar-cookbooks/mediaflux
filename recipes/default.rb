@@ -33,7 +33,11 @@ if node['mediaflux']['install_java'] then
 end
 java_command = node['mediaflux']['java_command']
 if ! java_command || java_command == '' then
-  # java_command = `which java`
+  default_java_command = `which java`
+  log "java-version" do
+    message "The default Java command is #{default_java_command}"
+    level :debug 
+  end 
   java_command = '/usr/bin/java'
 end
 
