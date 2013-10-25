@@ -31,8 +31,8 @@
 if node['mediaflux']['install_java'] then
   include_recipe "java"
 end
-java_command = node['mediaflux']['java_command'].merged_attributes()
-if ! java_command || java_command == '' then
+java_command = node['mediaflux']['java_command']
+if java_command == nil || java_command == '' then
   java_command = `which java`
 end
 
