@@ -33,7 +33,8 @@ if node['mediaflux']['install_java'] then
 end
 java_command = node['mediaflux']['java_command']
 if ! java_command || java_command == '' then
-  java_command = `which java`
+  # java_command = `which java`
+  java_command = '/usr/bin/java'
 end
 
 java_version = `#{java_command} -version 2>&1` 
