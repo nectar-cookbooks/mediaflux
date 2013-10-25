@@ -31,14 +31,14 @@
 if node['mediaflux']['install_java'] then
   include_recipe "java"
 end
-java_command = node['mediaflux']['java_command']
-if java_command == nil || java_command == '' then
-  java_command = `which java`
+java_cmd = node['mediaflux']['java_command']
+if java_cmd == nil || java_cmd == '' then
+  java_cmd = `which java`
 end
 
-java_version = `#{java_command} -version 2>&1` 
+java_version = `#{java_cmd} -version 2>&1` 
 log "java-version" do
-  message "The selected Java command is #{java_command} and the " +
+  message "The selected Java command is #{java_cmd} and the " +
           "version is #{java_version}"
   level :debug
 end
