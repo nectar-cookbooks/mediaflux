@@ -31,17 +31,9 @@
 if node['mediaflux']['install_java'] then
   include_recipe "java"
 end
-java_cmd = node['mediaflux']['java_command']
+java_cmd = node['mediaflux']['java_command'] 
 if java_cmd == nil || java_cmd == '' then
-  log "java1" do
-    message "#{java_cmd}"
-    level :debug
-  end
-  java_cmd = `which java`.strip()
-  log "java2" do
-    message "#{java_cmd} -version 2>&1"
-    level :debug
-  end
+  java_cmd = `which java`.strip() # Get rid of trailing newline!
 end
 
 java_version = `#{java_cmd} -version 2>&1` 
