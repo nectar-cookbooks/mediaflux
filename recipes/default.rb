@@ -33,7 +33,15 @@ if node['mediaflux']['install_java'] then
 end
 java_cmd = node['mediaflux']['java_command']
 if java_cmd == nil || java_cmd == '' then
+  log "java1" do
+    message "#{java_cmd}"
+    level :debug
+  end
   java_cmd = `which java`
+  log "java2" do
+    message "#{java_cmd} -version 2>&1"
+    level :debug
+  end
 end
 
 java_version = `#{java_cmd} -version 2>&1` 
