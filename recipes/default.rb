@@ -31,14 +31,9 @@
 if node['mediaflux']['install_java'] then
   include_recipe "java"
 end
-java_command = node['mediaflux']['java_command']
+java_command = node['mediaflux']['java_command'].immutablize()
 if ! java_command || java_command == '' then
-  default_java_command = `which java`
-  log "java-version" do
-    message "The default Java command is #{default_java_command}"
-    level :debug 
-  end 
-  java_command = '/usr/bin/java'
+  java_command = `which java`
 end
 
 java_version = `#{java_command} -version 2>&1` 
