@@ -32,7 +32,7 @@ if node['mediaflux']['install_java'] then
   include_recipe "java"
 end
 if ! node['mediaflux']['java_command'] then
-  node['mediaflux']['java_command'] = `which java`
+  node.default['mediaflux']['java_command'] = `which java`
 end
 
 java_command = node['mediaflux']['java_command']
