@@ -36,7 +36,6 @@ if ! java_command || java_command == '' then
   java_command = `which java`
 end
 
-java_command = node['mediaflux']['java_command']
 java_version = `#{java_command} -version 2>&1` 
 log "java-version" do
   message "The selected Java command is #{java_command} and the " +
