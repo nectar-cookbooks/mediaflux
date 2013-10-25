@@ -32,7 +32,8 @@ node.default['mediaflux']['mail_from'] = ''
 node.default['mediaflux']['notification_from'] = ''
 node.default['mediaflux']['authentication_domain'] = ''
 
-node.default['mediaflux']['java_command'] = '/usr/bin/java'
+node.default['mediaflux']['install_java'] = true
+node.default['mediaflux']['java_command'] = nil
 node.default['mediaflux']['jvm_memory_max'] = nil
 node.default['mediaflux']['jvm_memory_perm_max'] = '512'
 
@@ -44,4 +45,5 @@ node.normal['java']['accept_license_agreement'] = true
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
 node.from_file(run_context.resolve_attribute(*parse_attribute_file_spec("java")))
 
+# This is "internal" to the recipe and others that depend on it.
 node.default['mediaflux']['defer_start'] = false

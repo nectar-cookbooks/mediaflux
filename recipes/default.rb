@@ -27,7 +27,19 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-include_recipe "java"
+# This is hacky ... and probably wrong for some platforms
+if node['mediaflux']['install_java'] then
+  include_recipe "java"
+end
+if ! node['mediaflux']['java_command'] then
+  node['mediaflux']['java_command'] = `which java`
+end
+
+java_command = node['mediaflux']['java_command']
+java_version = `#{java_command} -version 2>&1` 
+log "The Java command is #{java_command} and the version is #{java_version}" do
+  level "debug"
+end
 
 mflux_home = node['mediaflux']['home']
 mflux_user = node['mediaflux']['user']
