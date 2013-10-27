@@ -183,6 +183,8 @@ template "#{mflux_home}/config/database/database.tcl" do
   variables({
     :mflux_home => mflux_home
   })
+  # This could be tailored by a layered application ...
+  not_if { ::File.exists?("#{mflux_home}/config/database/database.tcl") }
 end
 
 template "#{mflux_home}/config/services/network.tcl" do 
@@ -192,6 +194,8 @@ template "#{mflux_home}/config/services/network.tcl" do
     :http_port => node['mediaflux']['http_port'],
     :https_port => node['mediaflux']['https_port']
   })
+  # This could be tailored by a layered application ...
+  not_if { ::File.exists?("#{mflux_home}/config/services/network.tcl") }
 end
 
 cookbook_file "#{mflux_user_home}/bin/mfcommand" do 
@@ -265,13 +269,12 @@ if have_certs then
   end
 end
 
-# The 'defer_start' hack allows another recipe that it needs to do stuff
+# The 'defer_start' hack allows another recipe to do stuff
 # before the mediaflux service is started.
 service "mediaflux" do
   action ( if node['mediaflux']['defer_start'] then
-            [ :enable, :restart ]
-         else
-            [ :enable ]
-         end )
+             [ :enable, :restart ]
+           else
+             [ :enable ]
+           end )
 end
-
