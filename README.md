@@ -74,6 +74,25 @@ you have the following choices:
 * Ignore the security concerns, and set the "run_as_root" attribute to "true".
   This approach is not recommmended!
 
+Testing
+=======
+
+Once DaRIS is installed, we recommend that you do the following simple tests:
+
+* Check that the Mediaflux service is running using the command "sudo /etc/init.d/mediaflux status".
+
+* Start the "aterm" command shell by running "~mediaflux/bin/aterm".  This is an X11 application, so you will need to enable X11 forwarding if you connect via SSH.
+
+* Establish a browser connection to the root of the Mediaflux web portal.  The URL will be "http://<hostname>:<http-port>/" or "https://<hostname>:<https-port>/".   (If you used a self-signed SSL cert, you will need to tell your browser "it is OK" in the appropriate fashion ...).  Note that you can't do anything useful here, but this will confirm that HTTP / HTTPS connections are working.
+
+* Attempt to use the Daris Portal.
+  * Establish a browser connection to the DaRIS portal via https.  The URL will be  "https://<hostname>:<https-port>/daris/".  
+  * Login using system/manager and your manager password.  
+  * If you are prompted to allow an Architecta Mediaflux DTI agent applet to run, allow it.
+  * If you are prompted to allow loading of code from your website, allow it.  (That's most likely due to using a self-signed certificate.)
+  * When you get to the DaRIS Portal itself, check that the DTI agent is active.  Look at the "DTI" icon in the menu bar.  If it fails to activate, the DaRIS wiki has a page on "Java Issues" to help you diagnose the problem.  Also look at "
+https://<host>:<port>/daris/docs/install-dti.html".
+
 Security issues
 ===============
 
