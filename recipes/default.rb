@@ -128,7 +128,7 @@ accept
 #{mflux_home}
 EOF
 EOH
-  notifies :run, "bash[rm-dummy-configs]" :immediately
+  notifies :run, "bash[rm-dummy-configs]", :immediately
 end
 
 # These two files need to be replaced if and only if the installer just 
