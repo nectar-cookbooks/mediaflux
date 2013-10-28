@@ -128,6 +128,15 @@ accept
 #{mflux_home}
 EOF
 EOH
+  notifies :run, "bash[rm-dummy-configs]" :immediately
+end
+
+# These two files need to be replaced if and only if the installer just 
+# deposited them ...
+bash "rm-dummy-configs" do
+  action :nothing
+  code "rm #{mflux_home}/config/services/network.tcl && " +
+    "rm #{mflux_home}/config/database/database.tcl"
 end
 
 link "#{mflux_home}/volatile" do
