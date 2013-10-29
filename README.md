@@ -147,3 +147,5 @@ https://tickets.opscode.com/browse/COOK-847.
 
 * Support for re-install, including attempting to recover and use the current sysystem password.  (For now, we need to manually blow away the /etc/mediaflux/systemrc file, install with the default password, and then manually reset it using the procedure in the DaRIS wiki.)
 
+* Installing stuff in ~mediaflux/bin is maybe not the best ...
+
