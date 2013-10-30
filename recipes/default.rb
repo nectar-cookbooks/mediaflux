@@ -67,6 +67,16 @@ have_certs = ::File.exists?("#{mflux_home}/config/certs") ||
 # Do we need an SSL cert file?
 need_certs = node['mediaflux']['https_port'] != ''
 
+# Recover the admin password (if any) from the current installation to
+# avoid clobbering it.
+if File::exists?('/etc/mediaflux/servicerc') then
+  admin_password = `. /etc/mediaflux/servicerc && echo $MFLUX_PASSWORD`.strip()
+  new_passwd = false
+else
+  new_passwd = true
+  admin_password = node['mediaflux']['admin_password']
+end
+
 # This is required to run 'aterm' on a headless machine / virtual
 package "xauth" do
   action :install
@@ -175,7 +185,7 @@ template "/etc/mediaflux/servicerc" do
   mode 0440
   source "servicerc.erb"
   variables({
-    :admin_password => node['mediaflux']['admin_password'],
+    :admin_password => admin_password,
     :run_as_root => node['mediaflux']['run_as_root']
   })
 end
@@ -192,7 +202,7 @@ template "#{mflux_home}/config/database/database.tcl" do
   variables({
     :mflux_home => mflux_home
   })
-  # This could be tailored by a layered application ...
+  # This could have been tailored by a layered application ...
   not_if { ::File.exists?("#{mflux_home}/config/database/database.tcl") }
 end
 
@@ -203,7 +213,7 @@ template "#{mflux_home}/config/services/network.tcl" do
     :http_port => node['mediaflux']['http_port'],
     :https_port => node['mediaflux']['https_port']
   })
-  # This could be tailored by a layered application ...
+  # This could have been tailored by a layered application ...
   not_if { ::File.exists?("#{mflux_home}/config/services/network.tcl") }
 end
 
