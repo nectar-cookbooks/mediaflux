@@ -194,6 +194,16 @@ bash "fix-permissions" do
        "chmod 0440 /etc/mediaflux/servicerc"
 end
 
+template "#{mflux_user_home}/bin/change-mf-password.sh" do
+  source "change-mf-password.erb"
+  owner 'root'
+  group mflux_user
+  mode 0755
+  variables ({
+               :mflux_user_home => mflux_user_home
+             })
+end
+
 template "#{mflux_home}/config/database/database.tcl" do 
   owner mflux_user
   source "database-tcl.erb"
