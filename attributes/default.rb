@@ -12,9 +12,6 @@ node.default['mediaflux']['installer'] = 'mflux-dev_3.8.038_jvm_1.6.jar'
 # downloaded and placed in the installation directory as "installer.jar"
 node.default['mediaflux']['installer_url'] = 'unset'
 
-# This is the default password as per the mediaflux installation guide ...
-node.default['mediaflux']['admin_password'] = 'change_me'
-
 # If either of these is unset then the corresponding service endpoint
 # is not enabled.  Note that we default to using "high" ports because of
 # the difficulty of getting a non-root Java application to bind to a 

@@ -71,10 +71,8 @@ need_certs = node['mediaflux']['https_port'] != ''
 # avoid clobbering it.
 if File::exists?('/etc/mediaflux/servicerc') then
   admin_password = `. /etc/mediaflux/servicerc && echo $MFLUX_PASSWORD`.strip()
-  new_passwd = false
 else
-  new_passwd = true
-  admin_password = node['mediaflux']['admin_password']
+  admin_password = 'change_me'
 end
 
 # This is required to run 'aterm' on a headless machine / virtual
