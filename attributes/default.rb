@@ -1,7 +1,7 @@
 node.default['mediaflux']['home'] = '/opt/mflux'   # install directory
 node.default['mediaflux']['user'] = 'mflux'        # system user ... and home
 node.default['mediaflux']['user_home'] = '/usr/local/mediaflux'
-node.default['mediaflux']['fs'] = '/data'          # separate data directory
+node.default['mediaflux']['fs'] = nil              # separate data directory
 
 node.default['mediaflux']['installers'] = 'installers'
 

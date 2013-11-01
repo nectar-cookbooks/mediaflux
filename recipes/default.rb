@@ -149,12 +149,12 @@ end
 
 link "#{mflux_home}/volatile" do
   to mflux_fs
-  only_if { ::File.directory?(mflux_fs) }
+  only_if { mflux_fs && ::File.directory?(mflux_fs) }
 end
 
 directory "#{mflux_home}/volatile" do
   owner mflux_user
-  not_if { ::File.directory?(mflux_fs) }
+  not_if { mflux_fs && ::File.directory?(mflux_fs) }
 end
 
 ['logs', 'tmp', 'database', 'stores', 'shopping'].each do |dir|
