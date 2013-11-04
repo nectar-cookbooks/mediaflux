@@ -35,6 +35,7 @@
 #   MFLUX_PASSWORD   - the logon password for this script
 #   MFLUX_TRANSPORT  - the network transport type. One of: [http,https,tcpip]
 #   MFLUX_PORT       - the network connection port
+#   MFLUX_JAVA       - the command used to run a java application.
 #
 
 if [ -e /etc/mediaflux/servicerc ] ; then
@@ -48,12 +49,18 @@ test -s ${MFLUX_HOME}/bin/aserver.jar || {
   if test "$1" == "stop" ; then exit 0 ; else exit 6 ; fi
 }
 
+# Figure out a java command to use if none was specified.
+#
+if [ -z "$MFLUX_JAVA" ] ; then
+    JAVA=`which java`
+else
+    JAVA="$MFLUX_JAVA"
+fi
 
 # PROG is used by this script to identify the name of the application
 # Used for informational purposes only.
-
+#
 PROG=Mediaflux
-
 
 # User credentials required so the script can execute the following services:
 #
@@ -77,14 +84,17 @@ fi
 #
 #DEBUG=debug.port=8000
 
+OPTS=-Djava.net.preferIPv4Stack=true
+TRANS_OPTS="-Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT"
+
 # Function: start
 #
 start() {
     echo "Starting $PROG. Check log files for status."
     if [[ $DROP_PRIVILEGE -eq 1 ]]; then
-        su -c "umask $MFLUX_UMASK; java -Djava.net.preferIPv4Stack=true -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -s /bin/sh -l $MFLUX_SYSTEM_USER 
+        su -c "umask $MFLUX_UMASK; $JAVA $OPTS -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -s /bin/sh -l $MFLUX_SYSTEM_USER 
     else
-        umask $MFLUX_UMASK; java -Djava.net.preferIPv4Stack=true -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log&  
+        umask $MFLUX_UMASK; $JAVA $OPTS -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log&  
     fi
     RETVAL=$?
 }
@@ -94,9 +104,9 @@ start() {
 stop() {
     echo "Stopping $PROG.."
     if [[ $DROP_PRIVILEGE -eq 1 ]]; then
-        su -c "java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate" -s /bin/sh -l $MFLUX_SYSTEM_USER
+        su -c "$JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate" -s /bin/sh -l $MFLUX_SYSTEM_USER
     else
-        java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate  
+        $JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate  
     fi
     RETVAL=$?
 }
@@ -106,9 +116,9 @@ stop() {
 status() {
     echo "Checking status of $PROG.."
     if [[ $DROP_PRIVILEGE -eq 1 ]]; then
-        su -c "java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status" -s /bin/sh -l $MFLUX_SYSTEM_USER
+        su -c "$JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status" -s /bin/sh -l $MFLUX_SYSTEM_USER
     else
-        java -Djava.net.preferIPv4Stack=true -Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status
+        $JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status
     fi
     RETVAL=$?
 }

@@ -172,7 +172,8 @@ template "/etc/mediaflux/mfluxrc" do
     :mflux_user => mflux_user,
     :mflux_home => mflux_home,
     :http_port => node['mediaflux']['http_port'],
-    :https_port => node['mediaflux']['https_port']
+    :https_port => node['mediaflux']['https_port'],
+    :java => java
   })
 end
 

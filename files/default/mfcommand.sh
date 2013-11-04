@@ -98,6 +98,10 @@ then {
 }
 fi
 
+if [ -z "$MFLUX_JAVA" ]
+then
+    MFLUX_JAVA=`which java`
+fi
 }
 
 
@@ -113,7 +117,7 @@ logon() {
     }
     fi
 
-    MFLUX_SID=`java -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute logon $1 $2 $3`
+    MFLUX_SID=`$MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute logon $1 $2 $3`
     RETVAL=$?
 
     case $RETVAL in 
@@ -134,7 +138,7 @@ help() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      java -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute $*
+      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute $*
 
       RETVAL=$?
 
@@ -166,7 +170,7 @@ execute() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      java -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute $*
+      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute $*
 
       RETVAL=$?
 
@@ -189,7 +193,7 @@ execute() {
 
 # Function: import
 #
-#  This executes an arbitrary command.
+#  This executes an import command.
 #
 import() {
 
@@ -199,7 +203,7 @@ import() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      java -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute import $*
+      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute import $*
 
       RETVAL=$?
 
@@ -233,7 +237,7 @@ logoff() {
       # Remove the file now..
       rm -f "$MFLUX_SID_FILE"
 
-      java -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute logoff
+      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute logoff
 
       RETVAL=$?
     } else {

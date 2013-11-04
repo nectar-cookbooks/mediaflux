@@ -1,4 +1,4 @@
-export MFLUX_HOME=<%= @mflux_home %>
+export MFLUX_HOME="<%= @mflux_home %>"
 export MFLUX_SYSTEM_USER=<%= @mflux_user %>
 export MFLUX_HOST=`hostname`
 <% if @https_port != "" %>
@@ -8,3 +8,4 @@ export MFLUX_TRANSPORT=HTTPS
 export MFLUX_PORT=<%= @http_port %>
 export MFLUX_TRANSPORT=HTTP
 <% end %>
+export MFLUX_JAVA="<%= @java %>"
