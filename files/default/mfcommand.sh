@@ -144,7 +144,7 @@ help() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$*"
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$@"
 
       RETVAL=$?
 
@@ -176,7 +176,7 @@ execute() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$*"
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$@"
 
       RETVAL=$?
 
@@ -209,7 +209,7 @@ import() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC import "$*"
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC import "$@"
 
       RETVAL=$?
 
