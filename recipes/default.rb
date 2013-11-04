@@ -173,12 +173,11 @@ template "/etc/mediaflux/mfluxrc" do
     :mflux_home => mflux_home,
     :http_port => node['mediaflux']['http_port'],
     :https_port => node['mediaflux']['https_port'],
-    :java => java
+    :java => java_cmd
   })
 end
 
 template "/etc/mediaflux/servicerc" do 
-  action :create_if_missing
   owner "root"
   group mflux_user
   mode 0440
@@ -244,13 +243,10 @@ cookbook_file "/etc/init.d/mediaflux" do
   source "mediaflux-init.sh"
 end
 
-template "#{mflux_user_home}/bin/aterm" do 
+cookbook_file "#{mflux_user_home}/bin/aterm" do 
   owner mflux_user
   mode 0755
-  source "aterm.erb"
-  variables({
-    :mflux_home => mflux_home
-  })
+  source "aterm.sh"
 end
 
 if ! have_licence then
