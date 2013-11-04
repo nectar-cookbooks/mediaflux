@@ -1,8 +1,8 @@
 #!/bin/sh
-if [ -r /etc/mediaflux/mfluxrc -a -x /etc/mediaflux/mfluxrc ] ; then
+if [ -r /etc/mediaflux/mfluxrc ] ; then
     . /etc/mediaflux/mfluxrc
 fi
-if [ -e ~/.mfluxrc ] ; then
+if [ -r ~/.mfluxrc ] ; then
     . ~/.mfluxrc
 fi
 

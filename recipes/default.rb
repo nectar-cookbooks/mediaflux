@@ -27,6 +27,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+include_recipe "mediaflux::common"
+
 # This is hacky ... and probably wrong for some platforms
 if node['mediaflux']['install_java'] then
   include_recipe "java"
@@ -78,33 +80,6 @@ end
 # This is required to run 'aterm' on a headless machine / virtual
 package "xauth" do
   action :install
-end
-
-user mflux_user do
-  comment "MediaFlux service"
-  system true
-  shell "/bin/false"
-  home mflux_user_home
-end
-
-directory mflux_home do
-  owner mflux_user
-  mode 0755
-end
-
-directory mflux_user_home do
-  owner mflux_user
-  mode 0755
-end
-
-directory "#{mflux_user_home}/bin" do
-  owner mflux_user
-  mode 0755
-end
-
-directory "/etc/mediaflux" do
-  owner "root"
-  mode 0755
 end
 
 directory installers do
@@ -161,20 +136,6 @@ end
   directory "#{mflux_home}/volatile/#{dir}" do
     owner mflux_user
   end
-end
-
-template "/etc/mediaflux/mfluxrc" do 
-  owner "root"
-  group mflux_user
-  mode 0444
-  source "mfluxrc.erb"
-  variables({
-    :mflux_user => mflux_user,
-    :mflux_home => mflux_home,
-    :http_port => node['mediaflux']['http_port'],
-    :https_port => node['mediaflux']['https_port'],
-    :java => java_cmd
-  })
 end
 
 template "/etc/mediaflux/servicerc" do 

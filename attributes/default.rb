@@ -31,8 +31,11 @@ node.default['mediaflux']['authentication_domain'] = ''
 
 node.default['mediaflux']['install_java'] = true
 node.default['mediaflux']['java_command'] = nil
+
+# These apply to the mediaflux server only.
 node.default['mediaflux']['jvm_memory_max'] = nil
 node.default['mediaflux']['jvm_memory_perm_max'] = '512'
+node.default['mediaflux']['jvm_opts'] = ''
 
 node.normal['java']['install_flavor'] = 'openjdk'
 node.normal['java']['jdk_version'] = '7'
