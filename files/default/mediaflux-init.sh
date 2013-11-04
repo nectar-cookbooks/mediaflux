@@ -45,9 +45,10 @@ fi
 # Test if our configuration is valid
 test -s ${MFLUX_HOME}/bin/aserver.jar || {
   echo 1>&2 "${MFLUX_HOME} is not a valid location of the Mediaflux installation" 
-  echo 1>&2 "Check the configuration in /etc/sysconfig/mediaflux" 
+  echo 1>&2 "Check the configuration in /etc/mediaflux" 
   if test "$1" == "stop" ; then exit 0 ; else exit 6 ; fi
 }
+JAR="-jar ${MFLUX_HOME}/bin/aserver.jar"
 
 # Figure out a java command to use if none was specified.
 #
@@ -92,9 +93,9 @@ TRANS_OPTS="-Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT"
 start() {
     echo "Starting $PROG. Check log files for status."
     if [[ $DROP_PRIVILEGE -eq 1 ]]; then
-        su -c "umask $MFLUX_UMASK; $JAVA $OPTS -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -s /bin/sh -l $MFLUX_SYSTEM_USER 
+        su -c "umask $MFLUX_UMASK; $JAVA $OPTS $JAR application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log& " -s /bin/sh -l $MFLUX_SYSTEM_USER 
     else
-        umask $MFLUX_UMASK; $JAVA $OPTS -jar $MFLUX_HOME/bin/aserver.jar application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log&  
+        umask $MFLUX_UMASK; $JAVA $OPTS $JAR application.home=$MFLUX_HOME nogui $DEBUG >> $MFLUX_HOME/volatile/logs/unix_start.log&  
     fi
     RETVAL=$?
 }
@@ -104,9 +105,9 @@ start() {
 stop() {
     echo "Stopping $PROG.."
     if [[ $DROP_PRIVILEGE -eq 1 ]]; then
-        su -c "$JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate" -s /bin/sh -l $MFLUX_SYSTEM_USER
+        su -c "$JAVA $OPTS $TRANS_OPTS $JAR authentication=$AUTHEN application.home=$MFLUX_HOME terminate" -s /bin/sh -l $MFLUX_SYSTEM_USER
     else
-        $JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME terminate  
+        $JAVA $OPTS $TRANS_OPTS $JAR authentication=$AUTHEN application.home=$MFLUX_HOME terminate  
     fi
     RETVAL=$?
 }
@@ -116,9 +117,9 @@ stop() {
 status() {
     echo "Checking status of $PROG.."
     if [[ $DROP_PRIVILEGE -eq 1 ]]; then
-        su -c "$JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status" -s /bin/sh -l $MFLUX_SYSTEM_USER
+        su -c "$JAVA $OPTS $TRANS_OPTS $JAR authentication=$AUTHEN application.home=$MFLUX_HOME status" -s /bin/sh -l $MFLUX_SYSTEM_USER
     else
-        $JAVA $OPTS $TRANS_OPTS -jar $MFLUX_HOME/bin/aserver.jar authentication=$AUTHEN application.home=$MFLUX_HOME status
+        $JAVA $OPTS $TRANS_OPTS $JAR authentication=$AUTHEN application.home=$MFLUX_HOME status
     fi
     RETVAL=$?
 }

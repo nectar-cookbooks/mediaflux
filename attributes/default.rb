@@ -1,16 +1,17 @@
-node.default['mediaflux']['home'] = '/opt/mflux'   # install directory
+node.default['mediaflux']['home'] = '/opt/mflux'   # mediaflux install directory
+node.default['mediaflux']['bin'] = nil
 node.default['mediaflux']['user'] = 'mflux'        # system user ... and home
-node.default['mediaflux']['user_home'] = '/usr/local/mediaflux'
-node.default['mediaflux']['fs'] = nil              # separate data directory
+node.default['mediaflux']['user_home'] = nil
+node.default['mediaflux']['volatile'] = nil        # separate data directory
 
 node.default['mediaflux']['installers'] = 'installers'
 
 node.default['mediaflux']['installer'] = 'mflux-dev_3.8.038_jvm_1.6.jar' 
 
 # This should be overridden in the node or role definitions.  If it is
-# left "unset" then the recipe assumes that the installer has already been
+# nil then the recipe assumes that the installer has already been
 # downloaded and placed in the installation directory as "installer.jar"
-node.default['mediaflux']['installer_url'] = 'unset'
+node.default['mediaflux']['installer_url'] = nil
 
 # If either of these is unset then the corresponding service endpoint
 # is not enabled.  Note that we default to using "high" ports because of

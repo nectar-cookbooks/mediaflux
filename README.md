@@ -26,23 +26,22 @@ Attributes
 See `attributes/default.rb` for the default values.
 
 * `node['mediaflux']['home']` - Specifies the installation directory for Mediaflux.
+* `node['mediaflux']['bin']` - Specifies the directory for installing "Mediaflux related" utilities.  This defaults to the bin subdirectory of the installation directory.
 * `node['mediaflux']['user']` - Specifies the Mediaflux system username.
-* `node['mediaflux']['user_home']` - Specified the Mediaflux system user's home directory.
-* `node['mediaflux']['fs']` - Specifies a data directory for the Mediaflux server.  If this directory exists, the recipe will make the Mediaflux "volatile" directory a symlink to this one, and populate it with the required subdirectories.
+* `node['mediaflux']['user_home']` - Specified the Mediaflux system user's home directory. This defaults to the installation directory.
+* `node['mediaflux']['volatile']` - Specifies a data directory for the Mediaflux server.  If this directory exists, the recipe will make the Mediaflux "volatile" directory a symlink to this one, and populate it with the required subdirectories.
 * `node['mediaflux']['installers']` - Specifies a local directory where the recipes will look for downloaded installers and license files.
 * `node['mediaflux']['installer']` - Specifies the (simple) filename for the Mediaflux installer.
-* `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installers.  By default this is "unset", and the recipe will assume that you have obtained and placed the installer in the 'installers' directory.
+* `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installers.  By default this is unset (nil), and the recipe will assume that you have obtained and placed the installer in the 'installers' directory.
 * `node.default['mediaflux']['http_port']` - Specifies the port for the Mediaflux server's http listener.  If unset, the server won't start an http listener.
 * `node.default['mediaflux']['https_port']` - Specifies the port for the Mediaflux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.  The recipe will bail out if a certificate is required and none is available; e.g. in the 'installers' directory.
 * `node.default['mediaflux']['run_as_root']` - If true, the server will be run as "root" allowing it to bind to the normal HTTP / HTTPS ports.
 * `node.default['mediaflux']['install_java']` - If true, the main recipe will attempt to install Java using the "java::default" recipe.  
-* `node.default['mediaflux']['java_command']` - The pathname to be used for the Java command.
+* `node.default['mediaflux']['java_command']` - The pathname to be used for the Java command.  If this is unset, the platform-specific default path for the "java" command is used.
 
 The Java installation details are as follows:
 
 * If "install_java" flag is true, then the "java" cookbook attributes determine the version selected.  (Note that these are overridden at the "default" level in the mediaflux "attributes/default.rb" file.)
-
-* Once "java" is installed (or not), a default for "java_command" is set using "which java".
 
 Configuring the ports
 =====================

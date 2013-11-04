@@ -30,13 +30,14 @@
 include_recipe "mediaflux::common"
 
 mflux_home = node['mediaflux']['home']
+mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_user = node['mediaflux']['user']
-mflux_user_home = node['mediaflux']['user_home']
-mflux_fs = node['mediaflux']['fs']
+mflux_user_home = node['mediaflux']['user_home'] || mflux_home
+mflux_fs = node['mediaflux']['volatile']
 url = node['mediaflux']['installer_url']
 
 # This is where we look for installers and license key files ...
-installers = node['mediaflux']['installers']
+installers = node['mediaflux']['installers'] || 'installers'
 if ! installers.start_with?('/') then
   installers = mflux_user_home + '/' + installers
 end
@@ -71,7 +72,7 @@ directory installers do
   mode 0750
 end
 
-if url == 'unset' || url == 'change-me' 
+if url == nil
   if ! ::File.exists?("#{installers}/#{installer}")
     log 'You must either download the installer by hand' + 
         ' or set the mediaflux.installer_url attribute' do
@@ -139,7 +140,7 @@ bash "fix-permissions" do
        "chmod 0440 /etc/mediaflux/servicerc"
 end
 
-template "#{mflux_user_home}/bin/change-mf-password.sh" do
+template "#{mflux_bin}/change-mf-password.sh" do
   source "change-mf-password.erb"
   owner 'root'
   group mflux_user
@@ -170,13 +171,13 @@ template "#{mflux_home}/config/services/network.tcl" do
   not_if { ::File.exists?("#{mflux_home}/config/services/network.tcl") }
 end
 
-cookbook_file "#{mflux_user_home}/bin/mfcommand" do 
+cookbook_file "#{mflux_bin}/mfcommand" do 
   owner mflux_user
   mode 0755
   source "mfcommand.sh"
 end
 
-cookbook_file "#{mflux_user_home}/bin/mediaflux" do 
+cookbook_file "#{mflux_bin}/mediaflux" do 
   owner mflux_user
   mode 0750
   source "mediaflux-init.sh"
@@ -188,7 +189,7 @@ cookbook_file "/etc/init.d/mediaflux" do
   source "mediaflux-init.sh"
 end
 
-cookbook_file "#{mflux_user_home}/bin/aterm" do 
+cookbook_file "#{mflux_bin}/aterm" do 
   owner mflux_user
   mode 0755
   source "aterm.sh"

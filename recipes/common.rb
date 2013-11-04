@@ -32,16 +32,17 @@
 ##
 
 mflux_home = node['mediaflux']['home']
+mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_user = node['mediaflux']['user']
-mflux_user_home = node['mediaflux']['user_home']
+mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 
 # This is hacky ... and probably wrong for some platforms
 if node['mediaflux']['install_java'] then
   include_recipe "java"
 end
 java_cmd = node['mediaflux']['java_command'] 
-if java_cmd == nil || java_cmd == '' then
-  java_cmd = `which java`.strip() # Get rid of trailing newline!
+if java_cmd == nil 
+  java_cmd = '/usr/bin/java'
 end
 
 java_version = `#{java_cmd} -version 2>&1` 
@@ -63,7 +64,7 @@ directory mflux_user_home do
   mode 0755
 end
 
-directory "#{mflux_user_home}/bin" do
+directory "#{mflux_bin}" do
   owner mflux_user
   mode 0755
 end
@@ -86,6 +87,7 @@ template "/etc/mediaflux/mfluxrc" do
   variables({
     :mflux_user => mflux_user,
     :mflux_home => mflux_home,
+    :mflux_bin => mflux_bin,
     :http_port => node['mediaflux']['http_port'],
     :https_port => node['mediaflux']['https_port'],
     :java => java_cmd

@@ -1,11 +1,11 @@
 #!/bin/sh
 # file name mfcommand
 
-if [ -e /etc/mediaflux/mfluxrc -a -r /etc/mediaflux/mfluxrc ] ; then
+if [ -r /etc/mediaflux/mfluxrc ] ; then
     . /etc/mediaflux/mfluxrc
 fi
 
-if [ -e $HOME/.mfluxrc ] ; then
+if [ -r $HOME/.mfluxrc ] ; then
     . $HOME/.mfluxrc
 fi
 
@@ -100,8 +100,14 @@ fi
 
 if [ -z "$MFLUX_JAVA" ]
 then
-    MFLUX_JAVA=`which java`
+    JAVA=`which java`
+else
+    JAVA="$MFLUX_JAVA"
 fi
+
+OPTS="-Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT"
+CP="-cp $MFLUX_HOME/bin/aterm.jar"
+EXEC="arc.mf.command.Execute"
 }
 
 
@@ -117,7 +123,7 @@ logon() {
     }
     fi
 
-    MFLUX_SID=`$MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute logon $1 $2 $3`
+    MFLUX_SID=`$JAVA $OPTS $CP arc.mf.command.Execute logon $1 $2 $3`
     RETVAL=$?
 
     case $RETVAL in 
@@ -138,7 +144,7 @@ help() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute $*
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$*"
 
       RETVAL=$?
 
@@ -170,7 +176,7 @@ execute() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute $*
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$*"
 
       RETVAL=$?
 
@@ -203,7 +209,7 @@ import() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute import $*
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC import "$*"
 
       RETVAL=$?
 
@@ -237,7 +243,7 @@ logoff() {
       # Remove the file now..
       rm -f "$MFLUX_SID_FILE"
 
-      $MFLUX_JAVA -Djava.net.preferIPv4Stack=true -Dmf.host=$MFLUX_HOST -Dmf.port=$MFLUX_PORT -Dmf.transport=$MFLUX_TRANSPORT -Dmf.sid=$MFLUX_SID -cp $MFLUX_HOME/bin/aterm.jar arc.mf.command.Execute logoff
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID $CP $EXEC logoff
 
       RETVAL=$?
     } else {
@@ -269,7 +275,8 @@ status() {
 #
 case "$1" in 
   logon) 
-    logon $2 $3 $4 
+    shift
+    logon "$@" 
     ;;
 
   logoff)
@@ -277,7 +284,8 @@ case "$1" in
     ;;
 
   import)
-    import $2 $3 $4 $5 $6 $7 $8
+    shift
+    import "$@"
     ;;
 
   status)
@@ -285,16 +293,16 @@ case "$1" in
     ;;
 
   help)
-    help $*
+    help "$@"
     ;;
 
   --help)
-    echo $"Usage: $0 {logon|logoff|status|help|<mediaflux service>}"
+    echo $"Usage: $0 {logon|logoff|status|import|help|<mediaflux service>}"
     RETVAL=1
     ;;
 
   *) 
-    execute $*
+    execute "$@"
     ;;
 
 esac
