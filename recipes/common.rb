@@ -35,6 +35,22 @@ mflux_home = node['mediaflux']['home']
 mflux_user = node['mediaflux']['user']
 mflux_user_home = node['mediaflux']['user_home']
 
+# This is hacky ... and probably wrong for some platforms
+if node['mediaflux']['install_java'] then
+  include_recipe "java"
+end
+java_cmd = node['mediaflux']['java_command'] 
+if java_cmd == nil || java_cmd == '' then
+  java_cmd = `which java`.strip() # Get rid of trailing newline!
+end
+
+java_version = `#{java_cmd} -version 2>&1` 
+log "java-version" do
+  message "The selected Java command is #{java_cmd} and the " +
+          "version is #{java_version}"
+  level :debug
+end
+
 user mflux_user do
   comment "MediaFlux service"
   system true
