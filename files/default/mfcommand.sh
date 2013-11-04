@@ -140,11 +140,13 @@ logon() {
 #
 help() {
 
+    check_env;
+
     if test -f "$MFLUX_SID_FILE"
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$@"
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC $*
 
       RETVAL=$?
 
@@ -176,7 +178,7 @@ execute() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC "$@"
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC $*
 
       RETVAL=$?
 
@@ -209,7 +211,7 @@ import() {
     then {
       MFLUX_SID=`cat "$MFLUX_SID_FILE"`
 
-      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC import "$@"
+      $JAVA $OPTS -Dmf.sid=$MFLUX_SID -Dmf.result=$MFLUX_OUTPUT $CP $EXEC import $*
 
       RETVAL=$?
 
@@ -275,8 +277,7 @@ status() {
 #
 case "$1" in 
   logon) 
-    shift
-    logon "$@" 
+    logon $2 $3 $4
     ;;
 
   logoff)
@@ -284,8 +285,7 @@ case "$1" in
     ;;
 
   import)
-    shift
-    import "$@"
+    import $2 $3 $4 $5 $6 $7 $8
     ;;
 
   status)
@@ -293,7 +293,7 @@ case "$1" in
     ;;
 
   help)
-    help "$@"
+    help $*
     ;;
 
   --help)
@@ -302,7 +302,7 @@ case "$1" in
     ;;
 
   *) 
-    execute "$@"
+    execute $*
     ;;
 
 esac
