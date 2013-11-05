@@ -85,7 +85,7 @@ fi
 #
 #DEBUG=debug.port=8000
 
-OPTS=-Djava.net.preferIPv4Stack=true
+OPTS="$MFLUX_JAVA_OPTS"
 TRANS_OPTS="-Dmf.transport=$MFLUX_TRANSPORT -Dmf.port=$MFLUX_PORT"
 
 # Function: start
