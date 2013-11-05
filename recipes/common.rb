@@ -28,13 +28,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ##
-## Some base configuration that is common to mediaflux server and client mc's
+## Some base configuration that is common to mediaflux server and
+## client mc's.  This does not create the mediaflux service user ...
 ##
 
 mflux_home = node['mediaflux']['home']
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_user = node['mediaflux']['user']
-mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 
 # This is hacky ... and probably wrong for some platforms
 if node['mediaflux']['install_java'] then
@@ -52,25 +52,13 @@ log "java-version" do
   level :debug
 end
 
-user mflux_user do
-  comment "MediaFlux service"
-  system true
-  shell "/bin/false"
-  home mflux_user_home
-end
-
-directory mflux_user_home do
-  owner mflux_user
+directory mflux_home do
+  owner root
   mode 0755
 end
 
 directory "#{mflux_bin}" do
-  owner mflux_user
-  mode 0755
-end
-
-directory mflux_home do
-  owner mflux_user
+  owner root
   mode 0755
 end
 
@@ -81,11 +69,9 @@ end
 
 template "/etc/mediaflux/mfluxrc" do 
   owner "root"
-  group mflux_user
   mode 0444
   source "mfluxrc.erb"
   variables({
-    :mflux_user => mflux_user,
     :mflux_home => mflux_home,
     :mflux_bin => mflux_bin,
     :http_port => node['mediaflux']['http_port'],

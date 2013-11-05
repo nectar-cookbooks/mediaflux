@@ -67,6 +67,21 @@ package "xauth" do
   action :install
 end
 
+# Create the service user
+user mflux_user do
+  comment "MediaFlux service"
+  system true
+  shell "/bin/false"
+  home mflux_user_home
+end
+
+if mflux_user_home != mflux_home then
+  directory mflux_user_home do
+    owner mflux_user
+    mode 0755
+  end
+end
+
 directory installers do
   owner mflux_user
   mode 0750
@@ -129,6 +144,7 @@ template "/etc/mediaflux/servicerc" do
   mode 0440
   source "servicerc.erb"
   variables({
+    :mflux_user => mflux_user,
     :admin_password => admin_password,
     :run_as_root => node['mediaflux']['run_as_root']
   })

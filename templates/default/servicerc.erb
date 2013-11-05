@@ -1,5 +1,6 @@
 . /etc/mediaflux/mfluxrc
 
+export MFLUX_SYSTEM_USER=<%= @mflux_user %>
 export MFLUX_DOMAIN=system
 export MFLUX_USER=manager
 export MFLUX_PASSWORD="<%= @admin_password %>"
