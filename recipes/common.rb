@@ -35,6 +35,7 @@
 mflux_home = node['mediaflux']['home']
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_user = node['mediaflux']['user']
+mflux_host = node['mediaflux']['host'] || 'localhost'
 
 # This is hacky ... and probably wrong for some platforms
 if node['mediaflux']['install_java'] then
@@ -74,6 +75,7 @@ template '/etc/mediaflux/mfluxrc' do
   variables({
     :mflux_home => mflux_home,
     :mflux_bin => mflux_bin,
+    :mflux_host => mflux_host,
     :http_port => node['mediaflux']['http_port'],
     :https_port => node['mediaflux']['https_port'],
     :java => java_cmd
