@@ -38,7 +38,7 @@ mflux_user = node['mediaflux']['user']
 
 # This is hacky ... and probably wrong for some platforms
 if node['mediaflux']['install_java'] then
-  include_recipe "java"
+  include_recipe 'java'
 end
 java_cmd = node['mediaflux']['java_command'] 
 if java_cmd == nil 
@@ -46,31 +46,31 @@ if java_cmd == nil
 end
 
 java_version = `#{java_cmd} -version 2>&1` 
-log "java-version" do
+log 'java-version' do
   message "The selected Java command is #{java_cmd} and the " +
           "version is #{java_version}"
   level :debug
 end
 
 directory mflux_home do
-  owner root
+  owner 'root'
   mode 0755
 end
 
 directory "#{mflux_bin}" do
-  owner root
+  owner 'root'
   mode 0755
 end
 
-directory "/etc/mediaflux" do
-  owner "root"
+directory '/etc/mediaflux' do
+  owner 'root'
   mode 0755
 end
 
-template "/etc/mediaflux/mfluxrc" do 
-  owner "root"
+template '/etc/mediaflux/mfluxrc' do 
+  owner 'root'
   mode 0444
-  source "mfluxrc.erb"
+  source 'mfluxrc.erb'
   variables({
     :mflux_home => mflux_home,
     :mflux_bin => mflux_bin,
