@@ -6,6 +6,6 @@ export MFLUX_USER=manager
 export MFLUX_PASSWORD="<%= @admin_password %>"
 export MFLUX_RUN_AS_ROOT=<%= if @run_as_root then "1" else "0" end %>
 export MFLUX_UMASK=0007
-expory MFLUX_JAVA_OPTS="-Xmx2g -Djava.net.preferIPv4Stack=true"
+export MFLUX_JAVA_OPTS="-Djava.net.preferIPv4Stack=true"
 # For sink file system access
 umask 0007
