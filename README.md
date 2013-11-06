@@ -100,13 +100,75 @@ file.  This file should be readable only by "root" and the mediaflux user /
 group.  (The "mediaflux::default" Chef recipe will return it to that state 
 whenever you run it.)
 
-You could take further steps to secure the password.  However, note that 
+You could take further steps to secure the admin password.  However, note that 
 obfuscating or encrypting with a hard-wired key only gives the illusion of
 security ... if the attacker can gain root access to the machine.
 
+Tools and RC files
+==================
 
-Differences from standard Mediaflux
-===================================
+These recipes install a server init file, and some scripts for doing admin
+tasks:
+
+* The "mediaflux" script is the Mediaflux server's init script.
+
+* The "aterm" script is a wrapper for launching the Mediaflux aterm shell.
+
+* The "mfcommand" script is a modified version of the standard Mediaflux 
+  mfcommand script.
+
+* The "change-mf-password.sh" script automates the procedure for changing 
+  the Mediaflux admin password.
+
+Rather than embedding configuration parameters directly into the scripts, we
+use a simple system of "rc" files.  These are essentially shell scripts that
+set environment variables and are designed to be "sourced" by the main scripts.
+The system-wide "rc" files live in the "/etc/mediaflux" directory.
+
+The "/etc/mediaflux/mfluxrc" defines public parameters:
+  * `MFLUX_HOST` gives the server's hostname or IP address
+  * `MFLUX_PORT` gives the server's preferred port number
+  * `MFLUX_TRANSPORT` gives the server's preferred connection scheme
+  * `MFLUX_HOME` gives the Mediaflux installation directory
+  * `MFLUX_BIN` gives the directory where Mediaflux (and related) commands are
+    installed.
+  * `MFLUX_JAVA` gives the pathname of the "java" command that the various
+    scripts will use.
+
+* The "/etc/mediaflux/servicerc" defines some additional private parameters.  
+  * `MFLUX_SYSTEM_USER` gives the service account name for running the service.
+  * `MFLUX_DOMAIN`, `MFLUX_USER` and `MFLUX_PASSWORD` give the credentials for
+    a mediaflux account.  (For the init script, this needs to be the Mediaflux
+    admin account.  In other contexts, this could be an upload user's account,
+    or the end user's account.) 
+  * `MFLUX_JAVA_OPTS` gives the server's JVM options.
+
+Since the servicerc file contains admin authorization credentials, it should 
+be owned by "root:root" and not world readable or writeable.  (If this is not
+sufficiently secure, consider using SELinux or similar to further limit 
+access.)
+
+Typical scripts will / should "source" this file to pick up the default settings
+for the corresponding variables; e.g.
+
+    if [ -r /etc/mediaflux/mfluxrc ] ; then
+        . /etc/mediaflux/mfluxrc
+    fi
+
+Depending on the nature of the script, it may also be appropriate to source an
+"rc" file from the user's home directory.
+
+    if [ -r $HOME/.mfluxrc ] ; then
+        . $HOME/.mfluxrc
+    fi
+
+But if you do this, and the file contains passwords then you / your users need 
+to take appropriate steps to secure the users' "rc" files.
+
+Differences from standard and DaRIS Mediaflux
+=============================================
+
+The differences are pretty minor, but worth noting.
 
 * The standard Mediaflux installation assumes that the mediaflux user's home
   directory and the installation directory are the same.  With this recipe, 
@@ -117,7 +179,9 @@ Differences from standard Mediaflux
   directory, and the variables are defined in /etc/mediaflux/mfluxrc
   and /etc/mediaflux/servicerc.
 
-* In a standard Mediaflux installation, there is no "aterm" wrapper.
+* In a standard Mediaflux installation, there is no "aterm" wrapper, and no
+  "change-mf-password" script.  Changing the admin password is a manual
+  procedure using "aterm" and a text editor to edit the /etc/mediaflux file.
 
 * In a standard Mediaflux installation, the "mfcommand" wrapper doesn't use an
   "rc" file to pick up configuration variables.
@@ -125,15 +189,13 @@ Differences from standard Mediaflux
 * In a standard Mediaflux installation, the server is launched as "root".  
   With this recipe, the default behaviour is to launch as the Mediaflux user.
 
-Differences from DaRIS Mediaflux
-================================
-
-* In a DaRIS Mediaflux installation (i.e. when you follow the DaRIS 
+* In a vanilla DaRIS Mediaflux installation (i.e. when you follow the DaRIS 
   installation instructions), the init script reads the ".mfluxrc" file in
   the Mediaflux user's home directory.  This is a potential security hole.
 
-* In a DaRIS Mediaflux installation, the admin password is obfuscated by
-  base64 encoding it.  This only gives an illusion of security.
+* In a vanilla DaRIS Mediaflux installation, the admin password is obfuscated 
+  by base64 encoding it.  This only gives an illusion of security so we have
+  eliminated that.
 
 TO-DO LIST
 ==========
