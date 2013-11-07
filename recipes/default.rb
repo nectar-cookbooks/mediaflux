@@ -75,6 +75,11 @@ user mflux_user do
   home mflux_user_home
 end
 
+directory mflux_home do
+  owner mflux_user
+  mode 0755
+end
+
 if mflux_user_home != mflux_home then
   directory mflux_user_home do
     owner mflux_user
@@ -104,6 +109,7 @@ end
 
 bash "install-mediaflux" do 
   not_if { ::File.exists?("#{mflux_home}/PACKAGE.MF") }
+  user mflux_user
   code <<-EOH
 java -jar #{installers}/#{installer} nogui << EOF
 accept
