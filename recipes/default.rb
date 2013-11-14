@@ -31,6 +31,7 @@ include_recipe "mediaflux::common"
 
 mflux_home = node['mediaflux']['home']
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
+mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
 mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
@@ -48,11 +49,11 @@ end
 installer = node['mediaflux']['installer']
 
 # Can we find a licence file?
-have_licence = ::File.exists?("#{mflux_home}/config/licence.xml") ||
+have_licence = ::File.exists?("#{mflux_config}/licence.xml") ||
    ::File.exists?("#{installers}/licence.xml")
 
 # Can we find an SSL cert file?
-have_certs = ::File.exists?("#{mflux_home}/config/certs") ||
+have_certs = ::File.exists?("#{mflux_config}/certs") ||
    ::File.exists?("#{installers}/certs")
 
 # Do we need an SSL cert file?
@@ -132,8 +133,8 @@ end
 # deposited them ...
 bash "rm-dummy-configs" do
   action :nothing
-  code "rm #{mflux_home}/config/services/network.tcl && " +
-    "rm #{mflux_home}/config/database/database.tcl"
+  code "rm #{mflux_config}/services/network.tcl && " +
+    "rm #{mflux_config}/database/database.tcl"
 end
 
 link "#{mflux_home}/volatile" do
@@ -180,17 +181,17 @@ template "#{mflux_bin}/change-mf-password.sh" do
              })
 end
 
-template "#{mflux_home}/config/database/database.tcl" do 
+template "#{mflux_config}/database/database.tcl" do 
   owner mflux_user
   source "database-tcl.erb"
   variables({
     :mflux_home => mflux_home
   })
   # This could have been tailored by a layered application ...
-  not_if { ::File.exists?("#{mflux_home}/config/database/database.tcl") }
+  not_if { ::File.exists?("#{mflux_config}/database/database.tcl") }
 end
 
-template "#{mflux_home}/config/services/network.tcl" do 
+template "#{mflux_config}/services/network.tcl" do 
   owner mflux_user
   source "network-tcl.erb"
   variables({
@@ -198,7 +199,7 @@ template "#{mflux_home}/config/services/network.tcl" do
     :https_port => node['mediaflux']['https_port']
   })
   # This could have been tailored by a layered application ...
-  not_if { ::File.exists?("#{mflux_home}/config/services/network.tcl") }
+  not_if { ::File.exists?("#{mflux_config}/services/network.tcl") }
 end
 
 cookbook_file mfcommand do 
@@ -253,23 +254,23 @@ end
 
 # Install licence file if it isn't already installed
 bash "copy-licence" do
-  code "cp #{installers}/licence.xml #{mflux_home}/config/licence.xml" +
-       " && chmod 444 #{mflux_home}/config/licence.xml"
-  creates "#{mflux_home}/config/licence.xml"
-  not_if { ::File.exists?("#{mflux_home}/config/licence.xml") }
+  code "cp #{installers}/licence.xml #{mflux_config}/licence.xml" +
+       " && chmod 444 #{mflux_config}/licence.xml"
+  creates "#{mflux_config}/licence.xml"
+  not_if { ::File.exists?("#{mflux_config}/licence.xml") }
 end
 
 # Install SSL cert if it isn't already installed
 if have_certs then
   bash "copy-certs" do
-    code "cp #{installers}/certs #{mflux_home}/config/certs" +
-         " && chmod 444 #{mflux_home}/config/certs"
-    creates "#{mflux_home}/config/certs"
-    not_if { ::File.exists?("#{mflux_home}/config/certs") }
+    code "cp #{installers}/certs #{mflux_config}/certs" +
+         " && chmod 444 #{mflux_config}/certs"
+    creates "#{mflux_config}/certs"
+    not_if { ::File.exists?("#{mflux_config}/certs") }
   end
 end
 
-template "#{mflux_home}/config/initial_mflux_conf.tcl" do 
+template "#{mflux_config}/initial_mflux_conf.tcl" do 
   source "initial_mflux_conf.erb"
   owner mflux_user
   group mflux_user
@@ -304,7 +305,7 @@ else
   bash 'run-server-config' do
     code ". /etc/mediaflux/servicerc && " +
       "#{mfcommand} logon $MFLUX_DOMAIN $MFLUX_USER $MFLUX_PASSWORD && " +
-      "#{mfcommand} source #{mflux_home}/config/initial_flux_conf.tcl && " +
+      "#{mfcommand} source #{mflux_config}/initial_mflux_conf.tcl && " +
       "#{mfcommand} logoff"
     notifies :restart, "service[mediaflux-restart]", :immediately    
   end
