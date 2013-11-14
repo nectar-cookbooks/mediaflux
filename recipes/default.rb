@@ -29,6 +29,8 @@
 
 include_recipe "mediaflux::common"
 
+include_recipe "mediaflux::aar"
+
 mflux_home = node['mediaflux']['home']
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_config = "#{mflux_home}/config"
@@ -78,16 +80,6 @@ user mflux_user do
   system true
   shell "/bin/false"
   home mflux_user_home
-end
-
-directory mflux_home do
-  owner mflux_user
-  mode 0755
-end
-
-directory "#{mflux_home}/bin" do
-  owner mflux_user
-  mode 0755
 end
 
 if mflux_user_home != mflux_home then

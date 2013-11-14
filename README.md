@@ -20,6 +20,14 @@ This cookbook should in theory be platform independent ... across unix-like
 OSes.  The service installation stuff is one aspect that is guaranteed to not
 work on Windows.
 
+Recipes
+=======
+
+* `mediaflux::default` - installs the Mediaflux server and utilities.
+* `mediaflux::aterm` - installs just the Mediaflux "aterm" utility.
+* `mediaflux::aar` - installs just the Mediaflux "aar" utility.
+
+
 Attributes
 ==========
 
