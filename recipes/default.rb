@@ -270,7 +270,7 @@ if have_certs then
 end
 
 template "#{mflux_home}/config/initial_mflux_conf.tcl" do 
-  source "initial_mflux_conf_tcl.erb"
+  source "initial_mflux_conf.erb"
   owner mflux_user
   group mflux_user
   mode 0400
