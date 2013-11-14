@@ -30,7 +30,7 @@ node.default['mediaflux']['mail_smtp_host'] = ''
 node.default['mediaflux']['mail_smtp_port'] = '25'
 node.default['mediaflux']['mail_from'] = ''
 node.default['mediaflux']['notification_from'] = ''
-node.default['mediaflux']['authentication_domain'] = ''
+node.default['mediaflux']['authentication_domain'] = nil
 
 node.default['mediaflux']['install_java'] = true
 node.default['mediaflux']['java_command'] = nil

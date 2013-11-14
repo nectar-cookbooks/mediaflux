@@ -36,6 +36,8 @@ mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
 url = node['mediaflux']['installer_url']
 
+domain = node['mediaflux']['authentication_domain'] || 'users'
+
 mfcommand = "#{mflux_bin}/mfcommand"
 
 # This is where we look for installers and license key files ...
