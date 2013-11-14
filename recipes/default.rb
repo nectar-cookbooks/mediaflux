@@ -296,7 +296,7 @@ if node['mediaflux']['defer_start'] then
   end
 else
   service 'mediaflux' do
-    action :enable, :restart
+    action [:enable, :restart]
   end
 
   # Some initial configuration of the mediaflux service
