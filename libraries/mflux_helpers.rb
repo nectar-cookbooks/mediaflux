@@ -1,4 +1,4 @@
-module MFluxHelpers
+module MfluxHelpers
   def java_memory_model()
     version = `java -version 2>&1`
     if /64-Bit/.match(version) then '64'
