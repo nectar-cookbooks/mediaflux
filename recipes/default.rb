@@ -297,6 +297,7 @@ if node['mediaflux']['defer_start'] then
 else
   service 'mediaflux' do
     action [:enable, :restart]
+    notifies :run, "bash[mediaflux-running]", :immediately    
   end
 
   # Some initial configuration of the mediaflux service
