@@ -272,7 +272,7 @@ template "#{mflux_home}/config/initial_mflux_conf.tcl" do
   owner mflux_user
   group mflux_user
   mode 0400
-  helpers (MediafluxHelpers)
+  helpers (MfluxHelpers)
   variables ({
                :server_name => node['mediaflux']['server_name'],
                :server_organization => node['mediaflux']['server_organization'],
