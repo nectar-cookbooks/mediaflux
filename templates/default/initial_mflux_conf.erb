@@ -1,0 +1,31 @@
+proc init_mflux_conf { } {
+    set name "<%= fillIn(@server_name, 'unknown') %>"
+    set org "<%= fillIn(@server_organization, 'Unknown organization') %>"
+    server.identity.set :name $name :organization $org
+    set_property "jvm.data.model" "<%= java_memory_model() %>"
+    set_property "jvm.memory.max" "<%= java_memory_max(@jvm_memory_max) %>"
+    set_property "jvm.memory.perm.max" \
+	"<%= fillIn(@jvm_memory_perm_max, '512') %>"
+    set_property "mail.smtp.host" "<%= fillIn(@mail_smtp_host, '') %>"
+    set_property "mail.smtp.port" "<%= fillIn(@mail_smtp_port, '25') %>"
+    set_property "mail.from" "<%= fillIn(@mail_from, 'nobody@nowhere') %>"
+    set_property "notification.from" \
+	"<%= fillIn(@notification_from, 'nobody@nowhere') %>"
+
+    set domain "<%= fillIn(@authentication_domain, '') %>"
+    if { $domain != "" } {
+        authentication.domain.create :domain $domain :ifexists ignore
+    }
+}
+
+proc set_property { name value } {
+    if { $value == "" } { 
+       server.property.unset :name $name
+    } else { 
+       server.property.set :property -name $name $value
+    }
+}
+
+init_mflux_conf
+
+

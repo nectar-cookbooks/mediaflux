@@ -36,6 +36,8 @@ mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
 url = node['mediaflux']['installer_url']
 
+mfcommand = "#{mflux_bin}/mfcommand"
+
 # This is where we look for installers and license key files ...
 installers = node['mediaflux']['installers'] || 'installers'
 if ! installers.start_with?('/') then
@@ -197,7 +199,7 @@ template "#{mflux_home}/config/services/network.tcl" do
   not_if { ::File.exists?("#{mflux_home}/config/services/network.tcl") }
 end
 
-cookbook_file "#{mflux_bin}/mfcommand" do 
+cookbook_file mfcommand do 
   owner mflux_user
   mode 0755
   source "mfcommand.sh"
@@ -265,12 +267,57 @@ if have_certs then
   end
 end
 
+template "#{mflux_home}/config/initial_mflux_conf.tcl" do 
+  source "initial_mflux_conf_tcl.erb"
+  owner mflux_user
+  group mflux_user
+  mode 0400
+  helpers (MediafluxHelpers)
+  variables ({
+               :server_name => node['mediaflux']['server_name'],
+               :server_organization => node['mediaflux']['server_organization'],
+               :jvm_memory_max => node['mediaflux']['jvm_memory_max'],
+               :jvm_memory_perm_max => node['mediaflux']['jvm_memory_max'],
+               :mail_smtp_host => node['mediaflux']['mail_smtp_host'],
+               :mail_smtp_port => node['mediaflux']['mail_smtp_port'],
+               :mail_from => node['mediaflux']['mail_from'],
+               :notification_from => node['mediaflux']['notification_from'],
+               :authentication_domain => domain
+             })
+end
+
 # The 'defer_start' hack allows another recipe to do stuff
 # before the mediaflux service is started.
-service "mediaflux" do
-  action ( if node['mediaflux']['defer_start'] then
-             [ :enable, :restart ]
-           else
-             [ :enable ]
-           end )
+if node['mediaflux']['defer_start'] then
+  service 'mediaflux' do
+    action :enable
+  end
+else
+  service 'mediaflux' do
+    action :enable, :restart
+  end
+
+  # Some initial configuration of the mediaflux service
+  bash 'run-server-config' do
+    code ". /etc/mediaflux/servicerc && " +
+      "#{mfcommand} logon $MFLUX_DOMAIN $MFLUX_USER $MFLUX_PASSWORD && " +
+      "#{mfcommand} source #{mflux_home}/config/initial_flux_conf.tcl && " +
+      "#{mfcommand} logoff"
+    notifies :restart, "service[mediaflux-restart]", :immediately    
+  end
+
+  service 'mediaflux-restart' do
+    service_name 'mediaflux'
+    action :nothing
+    notifies :run, "bash[mediaflux-running]", :immediately    
+  end
+
+  bash "mediaflux-running" do
+    action :nothing
+    user mflux_user
+    code ". /etc/mediaflux/mfluxrc ; " +
+      "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
+      "    --retry-connrefused --no-check-certificate -O /dev/null " +
+      "    --waitretry=1 --timeout=2 --tries=30"
+  end
 end
