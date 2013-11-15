@@ -31,6 +31,8 @@ include_recipe "mediaflux::common"
 
 include_recipe "mediaflux::aar"
 
+include_recipe "mediaflux::aterm"
+
 mflux_home = node['mediaflux']['home']
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_config = "#{mflux_home}/config"
@@ -210,12 +212,6 @@ cookbook_file "/etc/init.d/mediaflux" do
   owner "root"
   mode 0750
   source "mediaflux-init.sh"
-end
-
-cookbook_file "#{mflux_bin}/aterm" do 
-  owner mflux_user
-  mode 0755
-  source "aterm.sh"
 end
 
 if ! have_licence then
