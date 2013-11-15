@@ -24,7 +24,8 @@ Recipes
 =======
 
 * `mediaflux::default` - installs the Mediaflux server and utilities.
-* `mediaflux::aterm` - installs just the Mediaflux "aterm" utility.
+* `mediaflux::aterm` - installs just the Mediaflux "aterm" and "mfcommand"
+  utilities.
 * `mediaflux::aar` - installs just the Mediaflux "aar" utility.
 
 
@@ -220,6 +221,3 @@ TO-DO LIST
 * Creation / installation of a self-signed certificate.  Could use the LWRP 
 resource that is being added to the standard "openssl" cookbook in 
 https://tickets.opscode.com/browse/COOK-847.
-
-
-

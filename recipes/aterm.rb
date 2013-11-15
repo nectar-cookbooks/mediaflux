@@ -46,3 +46,11 @@ cookbook_file "#{mflux_bin}/aterm" do
   mode 0755
   source "aterm.sh"
 end
+
+cookbook_file mfcommand do 
+  owner 'root'
+  mode 0755
+  source "mfcommand.sh"
+end
+
+

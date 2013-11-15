@@ -196,12 +196,6 @@ template "#{mflux_config}/services/network.tcl" do
   not_if { ::File.exists?("#{mflux_config}/services/network.tcl") }
 end
 
-cookbook_file mfcommand do 
-  owner mflux_user
-  mode 0755
-  source "mfcommand.sh"
-end
-
 cookbook_file "#{mflux_bin}/mediaflux" do 
   owner mflux_user
   mode 0750
