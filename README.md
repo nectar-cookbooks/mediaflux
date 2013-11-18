@@ -221,3 +221,5 @@ TO-DO LIST
 * Creation / installation of a self-signed certificate.  Could use the LWRP 
 resource that is being added to the standard "openssl" cookbook in 
 https://tickets.opscode.com/browse/COOK-847.
+
+* Implement an SELinux policy module for Mediaflux
