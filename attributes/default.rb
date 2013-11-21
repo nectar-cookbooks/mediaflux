@@ -35,6 +35,10 @@ node.default['mediaflux']['authentication_domain'] = nil
 node.default['mediaflux']['install_java'] = true
 node.default['mediaflux']['java_command'] = nil
 
+# These java opts go into the common 'mfluxrc' file and are available 
+# for mediaflux and 3rd-party Java clients ... as $MFLUX_JAVA_OPTS
+node.default['mediaflux']['client_jvm_opts'] = ''
+
 # These apply to the mediaflux server only.
 node.default['mediaflux']['jvm_memory_max'] = nil
 node.default['mediaflux']['jvm_memory_perm_max'] = '512'

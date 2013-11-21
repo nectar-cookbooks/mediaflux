@@ -53,6 +53,9 @@ log 'java-version' do
   level :debug
 end
 
+# General JVM opts to be used by mediaflux clients.
+java_opts = node['mediaflux']['client_jvm_opts'] || ''
+
 directory mflux_home do
   owner 'root'
   mode 0755
@@ -78,6 +81,7 @@ template '/etc/mediaflux/mfluxrc' do
     :mflux_host => mflux_host,
     :http_port => node['mediaflux']['http_port'],
     :https_port => node['mediaflux']['https_port'],
-    :java => java_cmd
+    :java => java_cmd,
+    :java_opts => java_opts
   })
 end
