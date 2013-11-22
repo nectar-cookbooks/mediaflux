@@ -125,7 +125,7 @@ bash "tweak-installation" do
   action :nothing
   code "rm #{mflux_config}/services/network.tcl && " +
     "rm #{mflux_config}/database/database.tcl && " +
-    "chown -r #{mflux_user}:#{mflux_user} #{mflux_home}"
+    "chown -R #{mflux_user}:#{mflux_user} #{mflux_home}"
 end
 
 link "#{mflux_home}/volatile" do
