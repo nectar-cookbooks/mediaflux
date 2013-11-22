@@ -115,7 +115,7 @@ accept
 #{mflux_home}
 EOF
 EOH
-  notifies :run, "bash[rm-dummy-configs]", :immediately
+  notifies :run, "bash[tweak-installation]", :immediately
 end
 
 # These two files need to be replaced if and only if the installer just 
@@ -123,7 +123,8 @@ end
 bash "rm-dummy-configs" do
   action :nothing
   code "rm #{mflux_config}/services/network.tcl && " +
-    "rm #{mflux_config}/database/database.tcl"
+    "rm #{mflux_config}/database/database.tcl && " +
+    "chown -r #{mflux_user}:#{mflux_user} #{mflux_home}"
 end
 
 link "#{mflux_home}/volatile" do
