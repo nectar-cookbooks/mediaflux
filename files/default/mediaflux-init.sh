@@ -42,6 +42,10 @@ if [ -e /etc/mediaflux/servicerc ] ; then
     . /etc/mediaflux/servicerc
 fi
 
+if [ ! -d $MFLUX_HOME/volatile/logs ]; then
+   mkdir -p $MFLUX_HOME/volatile/logs
+fi
+
 # Test if our configuration is valid
 test -s ${MFLUX_HOME}/bin/aserver.jar || {
   echo 1>&2 "${MFLUX_HOME} is not a valid location of the Mediaflux installation" 
@@ -112,6 +116,16 @@ stop() {
     RETVAL=$?
 }
 
+# Function: stop-by-kill
+#
+stop_by_kill() {
+    echo "Killing $PROG.."
+    kill -9 `ps -e -o ppid,args | grep $MFLUX_HOME | grep arc.mf.server.ServerGUI | grep -v grep | awk '{print $1}'`
+    sleep 1
+    kill -9 `ps -e -o pid,args | grep $MFLUX_HOME | grep arc.mf.server.ServerGUI | grep -v grep | awk '{print $1}'`
+    RETVAL=$?
+}
+
 # Function: status
 #
 status() {
@@ -141,11 +155,18 @@ case "$1" in
     start
     ;;
 
-  force-reload)
-    echo "Force Reload: Restarting $PROG.."
-    stop
+  force-stop)
+    echo "Force Stop: $PROG.."
+    stop_by_kill
+    ;;
+
+  force-restart)
+    echo "Force Restart: Restarting $PROG.."
+    stop_by_kill
+    sleep 1
     start
     ;;
+
 
   status)
     status
@@ -153,6 +174,8 @@ case "$1" in
     ;;
 
   *)
-    echo $"Usage: $0 {start|stop|restart|force-reload|status}"
+    echo $"Usage: $0 {start|stop|restart|force-stop|force-restart|status}"
     RETVAL=1
 esac
+
+exit $RETVAL
