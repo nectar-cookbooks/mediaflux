@@ -272,6 +272,11 @@ template "#{mflux_config}/initial_mflux_conf.tcl" do
              })
 end
 
+include_recipe "mediaflux::aar"
+
+include_recipe "mediaflux::aterm"
+
+
 # The 'defer_start' hack allows another recipe to do stuff
 # before the mediaflux service is started.
 if node['mediaflux']['defer_start'] then
@@ -309,7 +314,4 @@ else
   end
 end
 
-include_recipe "mediaflux::aar"
-
-include_recipe "mediaflux::aterm"
 
