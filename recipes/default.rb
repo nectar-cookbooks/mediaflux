@@ -109,7 +109,6 @@ end
 
 bash "install-mediaflux" do 
   not_if { ::File.exists?("#{mflux_home}/PACKAGE.MF") }
-  user mflux_user
   code <<-EOH
 java -jar #{installers}/#{installer} nogui << EOF
 accept
