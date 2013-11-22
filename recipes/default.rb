@@ -118,9 +118,10 @@ EOH
   notifies :run, "bash[tweak-installation]", :immediately
 end
 
-# These two files need to be replaced if and only if the installer just 
-# deposited them ...
-bash "rm-dummy-configs" do
+# Two files need to be replaced if and only if the installer just 
+# deposited them.  Also, we need to change the file ownership of the
+# installed files ...
+bash "tweak-installation" do
   action :nothing
   code "rm #{mflux_config}/services/network.tcl && " +
     "rm #{mflux_config}/database/database.tcl && " +
