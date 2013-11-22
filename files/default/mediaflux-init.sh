@@ -178,4 +178,9 @@ case "$1" in
     RETVAL=1
 esac
 
-exit $RETVAL
+#
+# Don't set an exit code for now.  It interferes with the Chef recipes if 
+# (for example) "stop" fails due to the service not running.
+#
+
+#exit $RETVAL
