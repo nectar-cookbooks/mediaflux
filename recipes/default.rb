@@ -29,10 +29,6 @@
 
 include_recipe "mediaflux::common"
 
-include_recipe "mediaflux::aar"
-
-include_recipe "mediaflux::aterm"
-
 mflux_home = node['mediaflux']['home']
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_config = "#{mflux_home}/config"
@@ -307,3 +303,8 @@ else
       "    --waitretry=1 --timeout=2 --tries=30"
   end
 end
+
+include_recipe "mediaflux::aar"
+
+include_recipe "mediaflux::aterm"
+
