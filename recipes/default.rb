@@ -138,6 +138,10 @@ directory "#{mflux_home}/volatile" do
   not_if { mflux_fs && ::File.directory?(mflux_fs) }
 end
 
+bash "set-volatile-owner" do
+  code "chown --defererence #{mflux_user}:#{mflux_user} #{mflux_home}/volatile"
+end
+
 ['logs', 'tmp', 'database', 'stores', 'shopping'].each do |dir|
   directory "#{mflux_home}/volatile/#{dir}" do
     owner mflux_user
