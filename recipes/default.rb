@@ -139,7 +139,7 @@ directory "#{mflux_home}/volatile" do
 end
 
 bash "set-volatile-owner" do
-  code "chown --defererence #{mflux_user}:#{mflux_user} #{mflux_home}/volatile"
+  code "chown --dereference #{mflux_user}:#{mflux_user} #{mflux_home}/volatile"
 end
 
 ['logs', 'tmp', 'database', 'stores', 'shopping'].each do |dir|
