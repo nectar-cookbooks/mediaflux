@@ -94,11 +94,8 @@ end
 
 if url == nil
   if ! ::File.exists?("#{installers}/#{installer}")
-    log 'You must either download the Mediaflux installer by hand' + 
-        ' or set the mediaflux.installer_url attribute' do
-      level :fatal
-    end
-    return
+    raise 'You must either download the Mediaflux installer by hand' + 
+        ' or set the mediaflux.installer_url attribute'
   end
 else
   remote_file "#{installers}/#{installer}" do
@@ -109,12 +106,9 @@ end
 
 if ! File.exists?("#{mflux_home}/PACKAGE.MF") &&
     node['mediaflux']['accept_license_agreement'] != true then
-  log 'You must either run the Mediaflux installer by hand' + 
+  raise 'You must either run the Mediaflux installer by hand' + 
     ' or set the mediaflux.accept_license_agreement attribute to true' +
-    ' to signify that you have read and accept the Mediaflux license' do
-    level :fatal
-  end
-  return
+    ' to signify that you have read and accept the Mediaflux license'
 end
 
 bash "install-mediaflux" do 
@@ -323,5 +317,3 @@ else
       "    --waitretry=1 --timeout=2 --tries=30"
   end
 end
-
-
