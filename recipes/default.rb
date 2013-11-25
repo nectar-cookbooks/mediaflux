@@ -94,7 +94,7 @@ end
 
 if url == nil
   if ! ::File.exists?("#{installers}/#{installer}")
-    log 'You must either download the installer by hand' + 
+    log 'You must either download the Mediaflux installer by hand' + 
         ' or set the mediaflux.installer_url attribute' do
       level :fatal
     end
@@ -107,8 +107,18 @@ else
   end
 end
 
+if ! File.exists?("#{mflux_home}/PACKAGE.MF") &&
+    node['mediaflux']['accept_license_agreement'] != true then
+  log 'You must either run the Mediaflux installer by hand' + 
+    ' or set the mediaflux.accept_license_agreement attribute to true' +
+    ' to signify that you have read and accept the Mediaflux license' do
+    level :fatal
+  end
+  return
+end
+
 bash "install-mediaflux" do 
-  not_if { ::File.exists?("#{mflux_home}/PACKAGE.MF") }
+  not_if { File.exists?("#{mflux_home}/PACKAGE.MF") }
   code <<-EOH
 java -jar #{installers}/#{installer} nogui << EOF
 accept

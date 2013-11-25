@@ -2,11 +2,26 @@ Overview
 ========
 
 This cookbook is for installing and doing the initial configuration of a
-Mediaflux instance.  The prerequisites are the installation files 
-for Mediaflux,and a current license key file for Mediaflux:
+Mediaflux instance.  The prerequisites are the installer
+for Mediaflux, and a current license key file for Mediaflux.  You are also
+required to accept the Mediaflux license.
 
-  - The Mediaflux installation JAR file and license key should be obtained
-    from Architecta (or SGI who distribute it as "LiveArc").
+* The download URL for the Mediaflux installer and a Mediaflux license 
+  key should be obtained from Architecta (or from SGI who distribute it 
+  as "LiveArc").  
+  * The installer can be downloaded by hand and placed in the "installers"
+    directory.  Alternatively, you can set the `mediaflux.installer` and
+    `mediaflux.installer_url` attributes (see below) to get these recipes 
+    to download the installer.
+  * The license file must be placed in the installer directory by hand.
+    
+* When you run the Mediaflux installer, you are required to accept the
+  Mediaflux license agreement before it will proceed.
+  * You can run the installer manually to allow you to read and accept
+    the license.
+  * Alternatively, you can set the `mediaflux.accept_license_agreement`
+    attribute to signify that you accept the agreement ... before running
+    the recipes.
 
 Dependencies
 ============
@@ -17,13 +32,12 @@ override the defaults; see the http://community.opscode.com/cookbooks/java for
 the relevant attributes
 
 This cookbook should in theory be platform independent ... across unix-like 
-OSes.  The service installation stuff is one aspect that is guaranteed to not
-work on Windows.
+OSes.  The cookbook will not work on Windows.
 
 Recipes
 =======
 
-* `mediaflux::default` - installs the Mediaflux server and utilities.
+* `mediaflux::default` - installs the Mediaflux server and all utilities.
 * `mediaflux::aterm` - installs just the Mediaflux "aterm" and "mfcommand"
   utilities.
 * `mediaflux::aar` - installs just the Mediaflux "aar" utility.
@@ -42,6 +56,7 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['installers']` - Specifies a local directory where the recipes will look for downloaded installers and license files.
 * `node['mediaflux']['installer']` - Specifies the (simple) filename for the Mediaflux installer.
 * `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installers.  By default this is unset (nil), and the recipe will assume that you have obtained and placed the installer in the 'installers' directory.
+* `node['mediaflux']['accept_license_agreement'] - Set this to true to signify that you accept the Mediaflux license agreement embedded in the installer.
 * `node['mediaflux']['host']` - The server's hostname.  If unspecified,  this defaults to name or IP address for this host.
 * `node['mediaflux']['http_port']` - Specifies the port for the Mediaflux server's http listener.  If unset, the server won't start an http listener.
 * `node['mediaflux']['https_port']` - Specifies the port for the Mediaflux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.  The recipe will bail out if a certificate is required and none is available; e.g. in the 'installers' directory.
@@ -133,7 +148,9 @@ tasks:
 * The "aterm" script is a wrapper for launching the Mediaflux aterm shell.
 
 * The "mfcommand" script is a modified version of the standard Mediaflux 
-  mfcommand script.
+  mfcommand script, which is in turn a commandline version of aterm.
+
+* The "aar" script is a wrapper for the Mediaflux aar archive tool.
 
 * The "change-mf-password.sh" script automates the procedure for changing 
   the Mediaflux admin password.
@@ -152,6 +169,7 @@ The "/etc/mediaflux/mfluxrc" defines public parameters:
     installed.
   * `MFLUX_JAVA` gives the pathname of the "java" command that the various
     scripts will use.
+  * `MFLUX_JAVA_OPTS` gives JVM options for use by tools.
 
 * The "/etc/mediaflux/servicerc" defines some additional private parameters.  
   * `MFLUX_SYSTEM_USER` gives the service account name for running the service.
@@ -159,11 +177,12 @@ The "/etc/mediaflux/mfluxrc" defines public parameters:
     a mediaflux account.  (For the init script, this needs to be the Mediaflux
     admin account.  In other contexts, this could be an upload user's account,
     or the end user's account.) 
-  * `MFLUX_JAVA_OPTS` gives the server's JVM options.
+  * `MFLUX_JAVA_OPTS` gives the server's JVM options.  (This overrides the
+    `MFLUX_JAVA_OPTS` variable in the 'mfluxrc' file.)
 
-Since the servicerc file contains admin authorization credentials, it should 
-be owned by "root:root" and not world readable or writeable.  (If this is not
-sufficiently secure, consider using SELinux or similar to further limit 
+Since the 'servicerc' file contains admin authorization credentials, it should 
+be owned by "root:root" and not be world readable or writeable.  (If this is not
+sufficiently secure, then consider using SELinux or similar to further limit 
 access.)
 
 Typical scripts will / should "source" this file to pick up the default settings
