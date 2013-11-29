@@ -80,11 +80,10 @@ user mflux_user do
   home mflux_user_home
 end
 
-if mflux_user_home != mflux_home then
-  directory mflux_user_home do
-    owner mflux_user
-    mode 0755
-  end
+directory mflux_user_home do
+  owner mflux_user
+  group mflux_user
+  mode 0755
 end
 
 directory installers do
