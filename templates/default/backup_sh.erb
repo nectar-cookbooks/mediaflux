@@ -13,6 +13,7 @@ LOG=$MFLUX_HOME/volatile/logs/backups.log
 REPLICA=<%= @replica %>
 KEEP_DAYS=<%= @keep_days %>
 
+echo >> $LOG
 echo "*** Starting mediaflux backup run - " `date` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
