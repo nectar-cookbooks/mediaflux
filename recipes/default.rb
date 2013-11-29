@@ -339,7 +339,7 @@ cookbook_file "#{mflux_config}/backup.tcl" do
   mode 0600
 end
 
-if node['backup_cron'] then
+if node['mediaflux']['backup_cron'] then
   times = node.default['mediaflux']['backup_cron_times']
   mailto = node.default['mediaflux']['backup_cron_mailto'] || ''
   cron 'mediaflux-backup-cron' do
