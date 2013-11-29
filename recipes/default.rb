@@ -322,6 +322,12 @@ backup_dir = node['mediaflux']['backup_dir'] || "#{mflux_home}/volatile/backups"
 backup_replica = node['mediaflux']['backup_replica']
 backup_keep_days = node['mediaflux']['backup_keep_days'] || 5
 
+directory backup_dir do
+  owner mflux_user
+  group mflux_user
+  mode 0750
+end
+
 template "#{mflux_home}/bin/backup.sh" do
   source 'backup_sh.erb'
   owner mflux_user
