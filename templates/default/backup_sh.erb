@@ -27,7 +27,7 @@ RC=$?
 $MF_COMMAND logoff
 
 if [ ! -z "$REPLICA" -a $RC -eq 0 ] ; then
-    rsync $DIR $REPLICA
+    rsync -av --dry-run --delete-before $DIR $REPLICA
     RC=$?
 fi
 
