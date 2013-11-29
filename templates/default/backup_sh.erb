@@ -27,8 +27,13 @@ RC=$?
 $MF_COMMAND logoff
 
 if [ ! -z "$REPLICA" -a $RC -eq 0 ] ; then
-    rsync -av --dry-run --delete-before $DIR $REPLICA
-    RC=$?
+    if [ `expr match $REPLICA ".+:"` -eq 0 ] ; then 
+        rsync -av --compress-level=0 --dry-run --delete-before $DIR $REPLICA
+	RC=$?
+    else
+        rsync -av --dry-run --delete-before $DIR $REPLICA
+	RC=$?
+    fi
 fi
 
 exit $RC
