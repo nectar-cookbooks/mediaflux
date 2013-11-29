@@ -13,7 +13,7 @@ LOG=$MFLUX_HOME/volatile/logs/backups.log
 REPLICA=<%= @replica %>
 KEEP_DAYS=<%= @keep_days %>
 
-echo "*** Starting backup run - " `date` >> $LOG
+echo "*** Starting mediaflux backup run - " `date` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
 find $DIR -type f -ctime -$KEEP_DAYS -exec rm {} \; >> $LOG 2>&1
@@ -30,32 +30,34 @@ if [ ! -e $TODAY ] ; then
     chmod 750 $TODAY_DIR
 fi
 
-echo "Running backup for $TODAY" >> $LOG
+echo "Running mediaflux backups for $TODAY" >> $LOG
 MF_COMMAND="$MFLUX_BIN/mfcommand"
-$MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD"
-$MF_COMMAND source -dir=$TODAY_DIR $MFLUX_HOME/config/daris_backup.tcl
+$MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD" >> $LOG 2>&1
+$MF_COMMAND source -dir=$TODAY_DIR $MFLUX_HOME/config/backup.tcl >> $LOG 2>&1
 RC=$?
-$MF_COMMAND logoff
+$MF_COMMAND logoff >> $LOG 2>&1
 
 if [ $RC -eq 0 ] ; then
-    echo "Backup for $TODAY completed" >> $LOG
+    echo "*** Backup for $TODAY completed" >> $LOG
 else
-    echo "Backup for $TODAY failed" >> $LOG
+    echo "*** Backup for $TODAY failed" >> $LOG
     echo "Mediaflux backup for $TODAY failed; see log file"
     exit $RC
 fi
 
 if [ ! -z "$REPLICA" ] ; then
     echo "Rsyncing backups" >> $LOG
-    OPTS="-av --dry-run --delete-before"
+    OPTS="-av --delete-before"
     if [ `expr match $REPLICA ".+:"` -eq 0 ] ; then 
         OPTS="$OPTS --delete-before"
     fi
     rsync $OPTS $DIR $REPLICA >> $LOG 2>&1
     RC=$?
     if [ $RC -ne 0 ] ; then
-	echo "Rsync failed" >> $LOG
-	echo "Mediaflux backup rsync failed; see log file"
+	echo "*** Backup replication failed" >> $LOG
+	echo "Mediaflux backup replication failed; see log file"
+    else
+	echo "*** Backup replication completed" >> $LOG
     fi
 fi
 
