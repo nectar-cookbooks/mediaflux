@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-# Perform a DaRIS backup.
+# Take a backup of the Mediaflux database and all assets
+# and (optionally) rsync the backups to an "replica" location.
 #
 
 if [ -e /etc/mediaflux/servicerc ] ; then
