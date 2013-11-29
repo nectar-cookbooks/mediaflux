@@ -8,17 +8,20 @@ if [ -e /etc/mediaflux/servicerc ] ; then
 fi
 
 DIR=<%= @backup_dir %>
+LOG=$MFLUX_HOME/volatile/logs/backups.log
 REPLICA=<%= @replica %>
 KEEP_DAYS=<%= @keep_days %>
 
-find $DIR -type f -ctime -$KEEP_DAYS -exec rm {} \;
+find $DIR -type f -ctime -$KEEP_DAYS -exec rm {} ";"
 find $DIR -mindepth 1 -type d -ctime -$KEEP_DAYS \
-    -exec rmdir --ignore-fail-on-non-empty {} \;
+    -exec rmdir --ignore-fail-on-non-empty "{}" ";"
 
 TODAY=${DIR}/`date +%F`
 
-mkdir $TODAY
-chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $TODAY
+if [ ! -e $TODAY ] ; then
+    mkdir $TODAY
+    chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $TODAY
+fi
 
 MF_COMMAND="$MFLUX_BIN/mfcommand"
 $MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD"
