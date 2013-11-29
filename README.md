@@ -37,7 +37,7 @@ OSes.  The cookbook will not work on Windows.
 Recipes
 =======
 
-* `mediaflux::default` - installs the Mediaflux server and all utilities.
+* `mediaflux::default` - installs the Mediaflux server and all utilities, and sets up backups.
 * `mediaflux::aterm` - installs just the Mediaflux "aterm" and "mfcommand"
   utilities.
 * `mediaflux::aar` - installs just the Mediaflux "aar" utility.
@@ -72,6 +72,12 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['authentication_domain']` - A Mediaflux authentication domain name for users.  This defaults to the namespace prefix.  If it is different, then you will most likely need to "tweak" some of the ${ns}_pssd package TCL code. 
 * `node['mediaflux']['jvm_memory_max']` - The server's heap size (in Mbytes)
 * `node['mediaflux']['jvm_memory_perm_max']` - The server's permgen size (in Mbytes)
+* `node['mediaflux']['backup_dir']` - The locations where backups are created.  This defaults to the "$MFLUX_HOME/volatile/backups".
+* `node['mediaflux']['backup_replica']` - The location for the backup replica.  If unset, there is no replication.
+* `node['mediaflux']['backup_keep_days']` - Keep backups for this many days. 
+* `node['mediaflux']['backup_cron']` - If true, a cron job is created to run the backups.  Defaults to false.
+* `node['mediaflux']['backup_cron_mailto']` - Mail account for backup cron email.
+* `node['mediaflux']['backup_cron_times']` - The backup cron schedule.  Defaults to `[ "0", "2", "*", "*", "*" ]`.
 
 The Java installation details are as follows:
 
@@ -201,6 +207,18 @@ Depending on the nature of the script, it may also be appropriate to source an
 
 But if you do this, and the file contains passwords then you / your users need 
 to take appropriate steps to secure the users' "rc" files.
+
+Backups
+=======
+
+This recipe creates a simple backup script that can be used to backup the
+Mediaflux database and the assets in the respective stores.
+
+The default script is designed for performing a full backups (at most) once a day, keeping backup sets for a a fixed number of days.  It can optionally use 'rsync' to "replicate" the backups to another location.  The actual backups are performed by running a Mediaflux TCL script.
+
+Logs of what the backup script does are written to "backups.log" in the Mediaflux log directory.
+
+The recipe will optionally create a cron job to run the backups.  You can specify the schedule for the job, and an optional email address for mailing failure reports to.
 
 Differences from standard and DaRIS Mediaflux
 =============================================
