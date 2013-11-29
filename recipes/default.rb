@@ -341,14 +341,27 @@ end
 
 times = node.default['mediaflux']['backup_cron_times']
 mailto = node.default['mediaflux']['backup_cron_mailto'] || ''
-cron 'mediaflux_backup_cron' do
-  command "#{mflux_home}/bin/backup.sh"
-  minute times[0]
-  hour times[1]
-  day times[2]
-  month times[3]
-  weekday times[4]
-  mailto mailto
-  user mflux_user
-  only_if { node['mediaflux']['backup_cron'] }
+if node['mediaflux']['backup_cron'] then
+  if mailto then
+    cron 'mediaflux_backup_cron' do
+      command "#{mflux_home}/bin/backup.sh"
+      minute times[0]
+      hour times[1]
+      day times[2]
+      month times[3]
+      weekday times[4]
+      user mflux_user
+      mailto mailto
+    end
+  else
+    cron 'mediaflux_backup_cron' do
+      command "#{mflux_home}/bin/backup.sh"
+      minute times[0]
+      hour times[1]
+      day times[2]
+      month times[3]
+      weekday times[4]
+      user mflux_user
+    end
+  end
 end
