@@ -52,6 +52,15 @@ node.normal['java']['install_flavor'] = 'openjdk'
 node.normal['java']['jdk_version'] = '7'
 node.normal['java']['accept_license_agreement'] = true
 
+# Mediaflux backup configuration
+node.default['mediaflux']['backup_dir'] = nil
+node.default['mediaflux']['backup_replica'] = nil
+node.default['mediaflux']['backup_keep_days'] = 5
+node.default['mediaflux']['backup_cron'] = false
+node.default['mediaflux']['backup_cron_mailto'] = nil
+node.default['mediaflux']['backup_cron_times'] = [ "0", "2", "*", "*", "*" ]
+node.default['mediaflux']['backup_cron_mailto'] = nil
+
 # This workaround comes from CHEF-4234.  It forces the "java" recipe attributes
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
 node.from_file(run_context.resolve_attribute(*parse_attribute_file_spec("java")))

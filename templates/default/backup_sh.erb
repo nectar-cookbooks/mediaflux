@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# Perform a DaRIS backup.
+#
+
+if [ -e /etc/mediaflux/servicerc ] ; then
+    . /etc/mediaflux/servicerc
+fi
+
+DIR=<%= @backup_dir %>
+REPLICA=<%= @replica %>
+KEEP_DAYS=<%= @keep_days %>
+
+find $DIR -type f -ctime -$KEEP_DAYS -exec rm {} \;
+find $DIR -mindepth 1 -type d -ctime -$KEEP_DAYS \
+    -exec rmdir --ignore-fail-on-non-empty {} \;
+
+TODAY=${DIR}/`date +%F`
+
+mkdir $TODAY
+chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $TODAY
+
+MF_COMMAND="$MFLUX_BIN/mfcommand"
+$MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD"
+$MF_COMMAND source -dir=$TODAY $MFLUX_HOME/config/daris_backup.tcl
+RC=$?
+$MF_COMMAND logoff
+
+if [ ! -z "$REPLICA" -a $RC -eq 0 ] ; then
+    rsync $DIR $REPLICA
+    RC=$?
+fi
+
+exit $RC

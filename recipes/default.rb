@@ -317,3 +317,39 @@ else
       "    --waitretry=1 --timeout=2 --tries=30"
   end
 end
+
+backup_dir = node['mediaflux']['backup_dir'] || "#{mflux_home}/volatile/backups"
+backup_replica = node['mediaflux']['backup_replica']
+backup_keep_days = node['mediaflux']['backup_keep_days'] || 5
+
+template "#{mflux_home}/bin/backup.sh" do
+  source 'backup_sh.erb'
+  owner mflux_user
+  mode 0700
+  variables ({
+               'backup_dir' => backup_dir,
+               'replica' => backup_replica,
+               'keep_days' => backup_keep_days
+             })
+end
+
+cookbook_file "#{mflux_config}/backup.tcl" do
+  source 'backup.tcl'
+  owner mflux_user
+  mode 0600
+end
+
+if node['backup_cron'] then
+  times = node.default['mediaflux']['backup_cron_times']
+  mailto = node.default['mediaflux']['backup_cron_mailto'] || ''
+  cron 'mediaflux-backup-cron' do
+    command "#{mflux_home}/bin/backup.sh"
+    minute times[0]
+    hour times[1]
+    day times[2]
+    month times[3]
+    weekday times[4]
+    mailto mailto
+    user mflux_user
+  end
+end
