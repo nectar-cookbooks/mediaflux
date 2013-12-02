@@ -39,15 +39,15 @@ RC=$?
 $MF_COMMAND logoff >> $LOG 2>&1
 
 if [ $RC -eq 0 ] ; then
-    echo "*** Backup for $TODAY completed" >> $LOG
+    echo "*** Backup for $TODAY completed - " `date` >> $LOG
 else
-    echo "*** Backup for $TODAY failed" >> $LOG
+    echo "*** Backup for $TODAY failed - " `date` >> $LOG
     echo "Mediaflux backup for $TODAY failed; see log file"
     exit $RC
 fi
 
 if [ ! -z "$REPLICA" ] ; then
-    echo "Rsyncing backups" >> $LOG
+    echo "Replicating backups to " $REPLICA >> $LOG
     OPTS="-av --delete-before"
     if [ `expr match $REPLICA ".+:"` -eq 0 ] ; then 
         OPTS="$OPTS --delete-before"
@@ -55,10 +55,10 @@ if [ ! -z "$REPLICA" ] ; then
     rsync $OPTS $DIR $REPLICA >> $LOG 2>&1
     RC=$?
     if [ $RC -ne 0 ] ; then
-	echo "*** Backup replication failed" >> $LOG
+	echo "*** Backup replication failed - " `date` >> $LOG
 	echo "Mediaflux backup replication failed; see log file"
     else
-	echo "*** Backup replication completed" >> $LOG
+	echo "*** Backup replication completed - " `date` >> $LOG
     fi
 fi
 
