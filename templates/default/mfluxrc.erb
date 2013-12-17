@@ -1,7 +1,7 @@
 export MFLUX_HOME="<%= @mflux_home %>"
 export MFLUX_BIN="<%= @mflux_bin %>"
 export MFLUX_HOST=<%= @mflux_host %>
-<% if @https_port != "" %>
+<% if @https_port != "" && @mflux_host != 'localhost' %>
 export MFLUX_PORT=<%= @https_port %>
 export MFLUX_TRANSPORT=HTTPS
 <% else %>
