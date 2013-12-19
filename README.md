@@ -83,6 +83,9 @@ The Java installation details are as follows:
 
 * If "install_java" flag is true, then the "java" cookbook attributes determine the version selected.  (Note that these are overridden at the "default" level in the mediaflux "attributes/default.rb" file.)
 
+Note that Arcitecta recommend that you use the latest Oracle 1.7.x Java; 
+see https://groups.google.com/forum/#!topic/mediaflux/Tn1ryG59lwU
+
 Configuring the ports
 =====================
 
