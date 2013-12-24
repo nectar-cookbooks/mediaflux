@@ -84,7 +84,11 @@ The Java installation details are as follows:
 * If "install_java" flag is true, then the "java" cookbook attributes determine the version selected.  (Note that these are overridden at the "default" level in the mediaflux "attributes/default.rb" file.)
 
 Note that Arcitecta recommend that you use the latest Oracle 1.7.x Java; 
-see https://groups.google.com/forum/#!topic/mediaflux/Tn1ryG59lwU
+see https://groups.google.com/forum/#!topic/mediaflux/Tn1ryG59lwU.  However, 
+there is a "gotcha".  The Chef recipe for installing Oracle Java relies on
+a URL and checksum that are provided by the default attributes.  Unless
+you keep your copy of the recipe up-to-date, you are liable to find that your
+system's Java installation is out-dated ... which is not a good thing.
 
 Configuring the ports
 =====================
