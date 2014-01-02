@@ -48,7 +48,7 @@ node.default['mediaflux']['jvm_memory_max'] = nil
 node.default['mediaflux']['jvm_memory_perm_max'] = '512'
 node.default['mediaflux']['jvm_opts'] = ''
 
-node.normal['java']['install_flavor'] = 'oracle'
+node.normal['java']['install_flavor'] = 'openjdk'
 node.normal['java']['jdk_version'] = '7'
 node.normal['java']['accept_license_agreement'] = true
 node.normal['java']['oracle']['accept_oracle_download_terms'] = true

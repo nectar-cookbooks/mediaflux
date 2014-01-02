@@ -79,16 +79,32 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['backup_cron_mailto']` - Mail account for backup cron email.
 * `node['mediaflux']['backup_cron_times']` - The backup cron schedule.  Defaults to `[ "0", "2", "*", "*", "*" ]`.
 
-The Java installation details are as follows:
+Java installation details
+=========================
 
-* If "install_java" flag is true, then the "java" cookbook attributes determine the version selected.  (Note that these are overridden at the "default" level in the mediaflux "attributes/default.rb" file.)
+If the `node['mediaflux']['install_java']` is true, then the "mediaflux"
+cookbook will use the "java" cookbook to install Java.  The `node['java']`
+attributes will determine the flavour and version of Java that is selected.
+Some of these are overridden at the default level by the "mediaflux" cookbook.
 
-Note that Arcitecta recommend that you use the latest Oracle 1.7.x Java; 
+Arcitecta recommend that you use the latest Oracle 1.7.x Java; 
 see https://groups.google.com/forum/#!topic/mediaflux/Tn1ryG59lwU.  However, 
-there is a "gotcha".  The Chef recipe for installing Oracle Java relies on
-a URL and checksum that are provided by the default attributes.  Unless
-you keep your copy of the recipe up-to-date, you are liable to find that your
-system's Java installation is out-dated ... which is not a good thing.
+there is a "gotcha".  The "java" cookbook relies on a patch-specific download 
+URL and checksum to select the version of Oracle Java.  By default, these are
+provided by attribute defaults.  This means that if you select "oracle" 
+flavour, your system's Java installation does not get updated automatically 
+... which is not a good thing.  By constrast, the "openjdk" flavour will 
+keep your system up-to-date with the latest patch release of Java available 
+from the distro's repositories.
+
+Accordingly, the "mediaflux" cookbook defaults to specifying the "openjdk" 
+flavour of Java.
+
+The "java" cookbook plugs the installed Java into the "alternatives" system 
+so that the commands are available via the normal distro-specific paths.  The
+"mediaflux" cookbook assumes this.  If you want to use a different Java 
+installation, set `node['mediaflux']['install_java']` to the path to the
+`java` command.
 
 Configuring the ports
 =====================
