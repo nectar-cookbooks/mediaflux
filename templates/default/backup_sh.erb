@@ -11,6 +11,7 @@ fi
 DIR=<%= @backup_dir %>
 LOG=$MFLUX_HOME/volatile/logs/backups.log
 REPLICA=<%= @replica %>
+STORE=<% @store %>
 KEEP_DAYS=<%= @keep_days %>
 
 echo >> $LOG
@@ -49,9 +50,6 @@ fi
 if [ ! -z "$REPLICA" ] ; then
     echo "Replicating backups to " $REPLICA >> $LOG
     OPTS="-av --delete-before"
-    if [ `expr match $REPLICA ".+:"` -eq 0 ] ; then 
-        OPTS="$OPTS --delete-before"
-    fi
     rsync $OPTS $DIR $REPLICA >> $LOG 2>&1
     RC=$?
     if [ $RC -ne 0 ] ; then
@@ -60,6 +58,13 @@ if [ ! -z "$REPLICA" ] ; then
     else
 	echo "*** Backup replication completed - " `date` >> $LOG
     fi
+fi
+
+if [ ! -z "$STORE" ] ; then
+   echo "Exporting backup to Object Store " $STORE >> $LOG
+   . /etc/mflux/openstackrc
+   swift stat >> $LOG
+   echo "*** Backup export completed - " `date` >> $LOG   
 fi
 
 exit $RC

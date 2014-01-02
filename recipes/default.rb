@@ -318,13 +318,18 @@ else
 end
 
 backup_dir = node['mediaflux']['backup_dir'] || "#{mflux_home}/volatile/backups"
-backup_replica = node['mediaflux']['backup_replica']
+backup_replica = node['mediaflux']['backup_replica'] || ''
+backup_store = node['mediaflux']['backup_store'] || ''
 backup_keep_days = node['mediaflux']['backup_keep_days'] || 5
 
 directory backup_dir do
   owner mflux_user
   group mflux_user
   mode 0750
+end
+
+if backup_store != '' then
+  include_recipe 'qcloud::openstack-clients'
 end
 
 template "#{mflux_home}/bin/backup.sh" do
@@ -334,6 +339,7 @@ template "#{mflux_home}/bin/backup.sh" do
   variables ({
                'backup_dir' => backup_dir,
                'replica' => backup_replica,
+               'store' => backup_store,
                'keep_days' => backup_keep_days
              })
 end
