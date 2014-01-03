@@ -8,11 +8,11 @@ if [ -e /etc/mediaflux/servicerc ] ; then
     . /etc/mediaflux/servicerc
 fi
 
-DIR=<%= @backup_dir %>
-LOG=$MFLUX_HOME/volatile/logs/backups.log
-REPLICA=<%= @replica %>
-STORE=<% @store %>
-KEEP_DAYS=<%= @keep_days %>
+DIR="<%= @backup_dir %>"
+LOG="$MFLUX_HOME/volatile/logs/backups.log"
+REPLICA="<%= @replica %>"
+STORE="<% @store %>"
+KEEP_DAYS="<%= @keep_days %>"
 
 echo >> $LOG
 echo "*** Starting mediaflux backup run - " `date` >> $LOG
