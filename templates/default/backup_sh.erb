@@ -19,8 +19,8 @@ echo "*** Starting mediaflux backup run - " `date` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
 find $DIR -type f -ctime +$KEEP_DAYS -exec rm -v {} \; >> $LOG 2>&1
-find $DIR -mindepth 1 -type d -ctime +$KEEP_DAYS \
-    -exec rmdir -v --ignore-fail-on-non-empty \{\} \; >> $LOG 2>&1
+echo "Cleaning empty backup dirs" >> $LOG
+find $DIR -mindepth 1 -type d -empty -exec rmdir -v {} \; >> $LOG 2>&1
 
 TODAY=`date +%F`
 TODAY_DIR=$DIR/$TODAY
