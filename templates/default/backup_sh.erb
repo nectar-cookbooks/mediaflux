@@ -61,10 +61,15 @@ if [ ! -z "$REPLICA" ] ; then
 fi
 
 if [ ! -z "$STORE" ] ; then
-   echo "Exporting backup to Object Store " $STORE >> $LOG
-   . /etc/mflux/openstackrc
-   swift stat >> $LOG
-   echo "*** Backup export completed - " `date` >> $LOG   
+    echo "Exporting backup to Object Store " $STORE >> $LOG
+    . /etc/mflux/openstackrc
+    RC=`( cd $DIR ; swift upload $STORE . >> $LOG ; echo $?)`
+    if [ $RC -ne 0 ] ; then
+	echo "*** Backup save to Swift failed - " `date` >> $LOG
+	echo "Mediaflux backup save to Swift failed; see log file"
+    else
+	echo "*** Backup save to Swift completed - " `date` >> $LOG
+    fi 
 fi
 
 exit $RC

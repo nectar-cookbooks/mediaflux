@@ -330,7 +330,6 @@ end
 
 if backup_store != '' then
   node.normal['qcloud']['openstack_rc_path'] = '/etc/mediaflux/openstackrc'
-  include_recipe 'qcloud::openstack-clients'
 end
 
 template "#{mflux_home}/bin/backup.sh" do

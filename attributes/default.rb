@@ -56,6 +56,7 @@ node.normal['java']['oracle']['accept_oracle_download_terms'] = true
 # Mediaflux backup configuration
 node.default['mediaflux']['backup_dir'] = nil
 node.default['mediaflux']['backup_replica'] = nil
+node.default['mediaflux']['backup_store'] = nil
 node.default['mediaflux']['backup_keep_days'] = 5
 node.default['mediaflux']['backup_cron'] = false
 node.default['mediaflux']['backup_cron_mailto'] = nil
