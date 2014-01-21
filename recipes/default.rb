@@ -330,7 +330,7 @@ end
 
 if backup_store != '' then
   node.normal['qcloud']['openstack_rc_path'] = '/etc/mediaflux/openstackrc'
-  node.normal['qcloud']['openstack_rc_user'] = mflux_user
+  node.normal['qcloud']['openstack_rc_group'] = mflux_user
 end
 
 template "#{mflux_home}/bin/backup.sh" do
