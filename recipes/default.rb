@@ -331,7 +331,7 @@ end
 if backup_store != '' then
   node.normal['setup']['openstack_rc_path'] = '/etc/mediaflux/openstackrc'
   node.normal['setup']['openstack_rc_group'] = mflux_user
-  include_recipe 'setup::openstack_clients'
+  include_recipe 'setup::openstack-clients'
 end
 
 template "#{mflux_home}/bin/backup.sh" do
