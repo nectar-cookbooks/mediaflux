@@ -329,8 +329,9 @@ directory backup_dir do
 end
 
 if backup_store != '' then
-  node.normal['qcloud']['openstack_rc_path'] = '/etc/mediaflux/openstackrc'
-  node.normal['qcloud']['openstack_rc_group'] = mflux_user
+  node.normal['setup']['openstack_rc_path'] = '/etc/mediaflux/openstackrc'
+  node.normal['setup']['openstack_rc_group'] = mflux_user
+  include_recipe 'setup::openstack_clients'
 end
 
 template "#{mflux_home}/bin/backup.sh" do
