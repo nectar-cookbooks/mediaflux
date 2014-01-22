@@ -1,11 +1,12 @@
 #!/bin/env perl
 use strict;
+use Logwatch ':dates';
 
 my $ThisLine;
-my $Run_count = 0
-my $Start_count = 0
-my $Completion_count = 0
-my $Fail_count = 0
+my $Run_count = 0;
+my $Start_count = 0;
+my $Completion_count = 0;
+my $Fail_count = 0;
 
 # Do the date filtering within the script so that we get to know
 # when there are no matching lines in the logfile.
