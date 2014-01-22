@@ -31,16 +31,17 @@
 # Add logwatch config files for Mediaflux, if logwatch is installed.
 #
 if File.exists?("/etc/logwatch") then
-  cookbook_file "/etc/logwatch/scripts/services/mediaflux" do
-    source "logwatch-mediaflux-script"
+  # Logwatching for the mediaflux backups.
+  cookbook_file "/etc/logwatch/scripts/services/mediaflux-backup" do
+    source "logwatch-mediaflux-backup-script"
     mode 0755
   end
 
-  cookbook_file "/etc/logwatch/conf/services/mediaflux.conf" do
-    source "logwatch-mediaflux-service"
+  cookbook_file "/etc/logwatch/conf/services/mediaflux-backup.conf" do
+    source "logwatch-mediaflux-backup-service"
   end
   
-  cookbook_file "/etc/logwatch/conf/logfiles/mediaflux.conf" do
-    source "logwatch-mediaflux-logfile"
+  cookbook_file "/etc/logwatch/conf/logfiles/mediaflux-backup.conf" do
+    source "logwatch-mediaflux-backup-logfile"
   end
 end

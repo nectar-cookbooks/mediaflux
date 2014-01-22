@@ -1,0 +1,34 @@
+#!/bin/env perl
+use strict;
+
+my $ThisLine;
+my $Run_count = 0
+my $Start_count = 0
+my $Completion_count = 0
+my $Fail_count = 0
+
+while (defined($ThisLine = <STDIN>)) {
+  if ($ThisLine =~ /\*\*\*.*Starting mediaflux backup run.*/) {
+    $Run_count += 1;
+  } elsif ($ThisLine =~ /\*\*\*.*(Running|Replicating|Exporting).*/) {
+    $Start_count += 1;
+  } elsif ($ThisLine =~ /\*\*\*.*completed.*/) {
+    $Completion_count += 1;
+  } elsif ($ThisLine =~ /\*\*\*.*failed.*/) {
+    $Fail_count += 1;
+    print "$ThisLine\n";
+  }
+}
+
+# Analyse the stats
+if ($Run_count == 0) {
+  print "No mediaflux backup runs started!\n";
+} else {
+  print "Mediaflux backups started $Run_count times.\n";
+}
+if ($Run_count > $Start_count) {
+  print "Problems occurred while preparing for mediaflux backups!\n";
+}
+if ($Start_count != $End_count) {
+  print "Some mediaflux backup steps did not complete normally!\n";
+}

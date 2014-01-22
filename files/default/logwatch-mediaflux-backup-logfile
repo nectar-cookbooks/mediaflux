@@ -1,0 +1,2 @@
+write	LogFile = /opt/mflux/volatile/logs/backup*.log
+
