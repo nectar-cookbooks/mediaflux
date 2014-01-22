@@ -19,7 +19,7 @@ while (defined($ThisLine = <STDIN>)) {
     } elsif ($ThisLine =~ /\*\*\*.*(Running|Replicating|Exporting).*/) {
       $Start_count += 1;
     } elsif ($ThisLine =~ /\*\*\*.*completed.*/) {
-      $Completion_count += 1;
+      $End_count += 1;
     } elsif ($ThisLine =~ /\*\*\*.*failed.*/) {
       $Fail_count += 1;
       print "$ThisLine\n";
