@@ -1,0 +1,41 @@
+#!/bin/env perl
+use strict;
+use Logwatch ':dates';
+
+my $ThisLine;
+my $Run_count = 0;
+my $Start_count = 0;
+my $End_count = 0;
+my $Fail_count = 0;
+
+# Do the date filtering within the script so that we get to know
+# when there are no matching lines in the logfile.
+my $SearchDate = TimeFilter('%d-%b-%Y %H:%M:%S');
+
+while (defined($ThisLine = <STDIN>)) {
+  if ($ThisLine =~ m/^$SearchDate\.\d{3} /o) {
+    if ($ThisLine =~ /\*\*\*.*Starting mediaflux backup run.*/) {
+      $Run_count += 1;
+    } elsif ($ThisLine =~ /\*\*\*.*(Running|Replicating|Exporting).*/) {
+      $Start_count += 1;
+    } elsif ($ThisLine =~ /\*\*\*.*completed.*/) {
+      $End_count += 1;
+    } elsif ($ThisLine =~ /\*\*\*.*failed.*/) {
+      $Fail_count += 1;
+      print "$ThisLine\n";
+    }
+  }
+}
+
+# Analyse the stats
+if ($Run_count == 0) {
+  print "No mediaflux backup runs started!\n";
+} else {
+  print "Mediaflux backups started $Run_count times.\n";
+}
+if ($Run_count > $Start_count) {
+  print "Problems occurred while preparing for mediaflux backups!\n";
+}
+if ($Start_count != $End_count) {
+  print "Some mediaflux backup steps did not complete normally!\n";
+}

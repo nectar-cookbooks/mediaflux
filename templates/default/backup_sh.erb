@@ -15,7 +15,7 @@ STORE="<%= @store %>"
 KEEP_DAYS="<%= @keep_days %>"
 
 echo >> $LOG
-echo "*** Starting mediaflux backup run - " `date` >> $LOG
+echo "*** Starting mediaflux backup run - " `date -I` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
 find $DIR -type f -ctime +$KEEP_DAYS -exec rm -v {} \; >> $LOG 2>&1
@@ -40,37 +40,37 @@ RC=$?
 $MF_COMMAND logoff >> $LOG 2>&1
 
 if [ $RC -eq 0 ] ; then
-    echo "*** Backup for $TODAY completed - " `date` >> $LOG
+    echo "*** Backup for $TODAY completed - " `date -I` >> $LOG
 else
-    echo "*** Backup for $TODAY failed - " `date` >> $LOG
+    echo "*** Backup for $TODAY failed - " `date -I` >> $LOG
     echo "Mediaflux backup for $TODAY failed; see log file"
     exit $RC
 fi
 
 if [ ! -z "$REPLICA" ] ; then
-    echo "Replicating backups to $REPLICA - " `date` >> $LOG
+    echo "Replicating backups to $REPLICA - " `date -I` >> $LOG
     OPTS="-av --delete-before"
     rsync $OPTS $DIR $REPLICA >> $LOG 2>&1
     RC=$?
     if [ $RC -ne 0 ] ; then
-	echo "*** Backup replication failed - " `date` >> $LOG
+	echo "*** Backup replication failed - " `date -I` >> $LOG
 	echo "Mediaflux backup replication failed; see log file"
     else
-	echo "*** Backup replication completed - " `date` >> $LOG
+	echo "*** Backup replication completed - " `date -I` >> $LOG
     fi
 fi
 
 if [ ! -z "$STORE" ] ; then
-    echo "Exporting backup to Object Store $STORE - " `date` >> $LOG
+    echo "Exporting backup to Object Store $STORE - " `date -I` >> $LOG
     . /etc/mediaflux/openstackrc
     cd $DIR
     swift upload -c $STORE . >> $LOG 2>&1
     RC=$?
     if [ $RC -ne 0 ] ; then
-	echo "*** Backup save to Swift failed - " `date` >> $LOG
+	echo "*** Backup save to Swift failed - " `date -I` >> $LOG
 	echo "Mediaflux backup save to Swift failed; see log file"
     else
-	echo "*** Backup save to Swift completed - " `date` >> $LOG
+	echo "*** Backup save to Swift completed - " `date -I` >> $LOG
     fi 
 fi
 
