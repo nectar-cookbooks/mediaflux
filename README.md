@@ -34,6 +34,11 @@ the relevant attributes
 This cookbook should in theory be platform independent ... across unix-like 
 OSes.  The cookbook will not work on Windows.
 
+If you enable saving backups to a SWIFT object store (see below), you need
+to make sure that `node['setup']['openstack_clients']` is false.  The 
+"mediaflux::default" recipe needs to run the "setup::openstack-clients" 
+recipe itself ... after tweaking some attributes.  (See issue #2).
+
 Recipes
 =======
 

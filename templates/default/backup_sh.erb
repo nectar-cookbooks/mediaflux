@@ -48,7 +48,7 @@ else
 fi
 
 if [ ! -z "$REPLICA" ] ; then
-    echo "Replicating backups to " $REPLICA >> $LOG
+    echo "Replicating backups to $REPLICA - " `date` >> $LOG
     OPTS="-av --delete-before"
     rsync $OPTS $DIR $REPLICA >> $LOG 2>&1
     RC=$?
@@ -61,9 +61,11 @@ if [ ! -z "$REPLICA" ] ; then
 fi
 
 if [ ! -z "$STORE" ] ; then
-    echo "Exporting backup to Object Store " $STORE >> $LOG
-    . /etc/mflux/openstackrc
-    RC=`( cd $DIR ; swift upload $STORE . >> $LOG ; echo $?)`
+    echo "Exporting backup to Object Store $STORE - " `date` >> $LOG
+    . /etc/mediaflux/openstackrc
+    cd $DIR
+    swift upload -c $STORE . >> $LOG 2>&1
+    RC=$?
     if [ $RC -ne 0 ] ; then
 	echo "*** Backup save to Swift failed - " `date` >> $LOG
 	echo "Mediaflux backup save to Swift failed; see log file"
