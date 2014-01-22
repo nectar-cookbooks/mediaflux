@@ -1,2 +1,3 @@
-write	LogFile = /opt/mflux/volatile/logs/backup*.log
+LogFile = /opt/mflux/volatile/logs/backup*.log
 
+*ApplyStdDate
