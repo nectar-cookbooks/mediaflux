@@ -35,7 +35,7 @@ if [ ! -e $TODAY ] ; then
     chmod 750 $TODAY_DIR
 fi
 
-echo "Running mediaflux backups for $TODAY" >> $LOG
+echo "*** Running mediaflux backups for $TODAY - " `$TIMESTAMP` >> $LOG
 MF_COMMAND="$MFLUX_BIN/mfcommand"
 $MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD" >> $LOG 2>&1
 $MF_COMMAND source -dir=$TODAY_DIR $MFLUX_HOME/config/backup.tcl >> $LOG 2>&1
