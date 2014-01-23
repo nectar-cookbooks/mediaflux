@@ -14,9 +14,10 @@ my $Fail_count = 0;
 # logwatch and the backup script need to have the same notion of 
 # local time.)
 my $SearchDate = TimeFilter('%Y-%m-%dT%H:%M:%S[+-][0-9]{2}:[0-9]{2}');
+my $filter = qr/^.*$SearchDate$/
 
 while (defined($ThisLine = <STDIN>)) {
-  if ($ThisLine =~ m/$SearchDate$/o) {
+  if ($ThisLine =~ $filter) {
     if ($ThisLine =~ /\*\*\*.*Starting mediaflux backup run.*/) {
       $Run_count += 1;
     } elsif ($ThisLine =~ /\*\*\*.*(Running|Replicating|Exporting).*/) {
