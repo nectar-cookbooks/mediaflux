@@ -17,29 +17,31 @@ my $SearchDate = TimeFilter('%Y-%m-%dT%H:%M:%S[+-][0-9]{4}');
 my $Filter = qr/^\*\*\*.*$SearchDate$/;
 
 while (defined($ThisLine = <STDIN>)) {
-  if ($ThisLine =~ $Filter) {
-    if ($ThisLine =~ /Starting mediaflux backup run/) {
-      $Run_count += 1;
-    } elsif ($ThisLine =~ /(Running|Replicating|Exporting)/) {
-      $Start_count += 1;
-    } elsif ($ThisLine =~ /completed/) {
-      $End_count += 1;
-    } elsif ($ThisLine =~ /failed/) {
-      $Fail_count += 1;
-      print "$ThisLine\n";
+    if ($ThisLine =~ $Filter) {
+	if ($ThisLine =~ /Starting mediaflux backup run/) {
+	    $Run_count += 1;
+	} elsif ($ThisLine =~ /(Running|Replicating|Exporting)/) {
+	    $Start_count += 1;
+	} elsif ($ThisLine =~ /completed/) {
+	    $End_count += 1;
+	} elsif ($ThisLine =~ /failed/) {
+	    $Fail_count += 1;
+	    print "$ThisLine\n";
+	}
     }
-  }
 }
 
-# Analyse the stats
+# Analyse the event counts ...
 if ($Run_count == 0) {
-  print "WARNING: No mediaflux backup runs attempted!\n";
+    print "WARNING: No mediaflux backup runs attempted!\n";
 } elsif ($Run_count > $Start_count) {
-  my $diff = $Start_count - $Run_count;
-  print "WARNING: mediaflux backup attempt failed $diff times\n";
+    my $diff = $Start_count - $Run_count;
+    print "WARNING: mediaflux backup attempt failed to start $diff times\n";
 } else {
-  print "Mediaflux backups started $Run_count times.\n";
+    print "Mediaflux backups started $Run_count times.\n";
 }
 if ($Start_count != $End_count) {
-  print "WARNING: Some mediaflux backup steps did not complete normally!\n";
+    print "WARNING: Some mediaflux backup steps did not complete normally!\n";
+} elsif ($Start_count > 0) {
+    print "All backup steps completed normally.\n";
 }
