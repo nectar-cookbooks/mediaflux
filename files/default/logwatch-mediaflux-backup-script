@@ -33,13 +33,13 @@ while (defined($ThisLine = <STDIN>)) {
 
 # Analyse the stats
 if ($Run_count == 0) {
-  print "No mediaflux backup runs started!\n";
+  print "WARNING: No mediaflux backup runs attempted!\n";
+} elsif ($Run_count > $Start_count) {
+  my $diff = $Start_count - $Run_count;
+  print "WARNING: mediaflux backup attempt failed $diff times\n";
 } else {
   print "Mediaflux backups started $Run_count times.\n";
 }
-if ($Run_count > $Start_count) {
-  print "Problems occurred while preparing for mediaflux backups!\n";
-}
 if ($Start_count != $End_count) {
-  print "Some mediaflux backup steps did not complete normally!\n";
+  print "WARNING: Some mediaflux backup steps did not complete normally!\n";
 }
