@@ -14,13 +14,16 @@ REPLICA="<%= @replica %>"
 STORE="<%= @store %>"
 KEEP_DAYS="<%= @keep_days %>"
 
+TIMESTAMP="date -Iseconds"
+
 echo >> $LOG
-echo "*** Starting mediaflux backup run - " `date -I` >> $LOG
+echo "*** Starting mediaflux backup run - " `$TIMESTAMP` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
 find $DIR -type f -ctime +$KEEP_DAYS -exec rm -v {} \; >> $LOG 2>&1
 echo "Cleaning empty backup dirs" >> $LOG
 find $DIR -mindepth 1 -type d -empty -exec rmdir -v {} \; >> $LOG 2>&1
+
 
 TODAY=`date +%F`
 TODAY_DIR=$DIR/$TODAY
@@ -32,7 +35,7 @@ if [ ! -e $TODAY ] ; then
     chmod 750 $TODAY_DIR
 fi
 
-echo "Running mediaflux backups for $TODAY" >> $LOG
+echo "*** Running mediaflux backups for $TODAY - " `$TIMESTAMP` >> $LOG
 MF_COMMAND="$MFLUX_BIN/mfcommand"
 $MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD" >> $LOG 2>&1
 $MF_COMMAND source -dir=$TODAY_DIR $MFLUX_HOME/config/backup.tcl >> $LOG 2>&1
@@ -40,37 +43,37 @@ RC=$?
 $MF_COMMAND logoff >> $LOG 2>&1
 
 if [ $RC -eq 0 ] ; then
-    echo "*** Backup for $TODAY completed - " `date -I` >> $LOG
+    echo "*** Backup for $TODAY completed - " `$TIMESTAMP` >> $LOG
 else
-    echo "*** Backup for $TODAY failed - " `date -I` >> $LOG
+    echo "*** Backup for $TODAY failed - " `$TIMESTAMP` >> $LOG
     echo "Mediaflux backup for $TODAY failed; see log file"
     exit $RC
 fi
 
 if [ ! -z "$REPLICA" ] ; then
-    echo "Replicating backups to $REPLICA - " `date -I` >> $LOG
+    echo "*** Replicating backups to $REPLICA - " `$TIMESTAMP` >> $LOG
     OPTS="-av --delete-before"
     rsync $OPTS $DIR $REPLICA >> $LOG 2>&1
     RC=$?
     if [ $RC -ne 0 ] ; then
-	echo "*** Backup replication failed - " `date -I` >> $LOG
+	echo "*** Backup replication failed - " `$TIMESTAMP` >> $LOG
 	echo "Mediaflux backup replication failed; see log file"
     else
-	echo "*** Backup replication completed - " `date -I` >> $LOG
+	echo "*** Backup replication completed - " `$TIMESTAMP` >> $LOG
     fi
 fi
 
 if [ ! -z "$STORE" ] ; then
-    echo "Exporting backup to Object Store $STORE - " `date -I` >> $LOG
+    echo "*** Exporting backup to Object Store $STORE - " `$TIMESTAMP` >> $LOG
     . /etc/mediaflux/openstackrc
     cd $DIR
     swift upload -c $STORE . >> $LOG 2>&1
     RC=$?
     if [ $RC -ne 0 ] ; then
-	echo "*** Backup save to Swift failed - " `date -I` >> $LOG
+	echo "*** Backup save to Swift failed - " `$TIMESTAMP` >> $LOG
 	echo "Mediaflux backup save to Swift failed; see log file"
     else
-	echo "*** Backup save to Swift completed - " `date -I` >> $LOG
+	echo "*** Backup save to Swift completed - " `$TIMESTAMP` >> $LOG
     fi 
 fi
 
