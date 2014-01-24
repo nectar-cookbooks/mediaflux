@@ -2,13 +2,13 @@
 use strict;
 
 my $ThisLine;
-my $SearchDate = TimeFilter('%d-%b-%Y %H:%M:%S\.[0-9]*');
+my $SearchDate = TimeFilter("%d-%b-%Y %H:%M:%S\.[0-9]*");
 my $Filter = qr/,$SearchDate,/;
 
 # To start with, just output any ERROR or WARNing lines ...
 
 while (defined($ThisLine = <STDIN>)) {
-    if ($ThisLine ~= $Filter) {
+    if ($ThisLine =~ $Filter) {
 	if ($ThisLine =~ /\[.*ERROR.*\](.*)/oi) {
 	    print "$ThisLine\n";
 	} elsif ($ThisLine =~ /\[.*WARN.*\](.*)/oi) {
