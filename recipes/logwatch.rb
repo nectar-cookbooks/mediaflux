@@ -44,4 +44,18 @@ if File.exists?("/etc/logwatch") then
   cookbook_file "/etc/logwatch/conf/logfiles/mediaflux-backup.conf" do
     source "logwatch-mediaflux-backup-logfile"
   end
+
+  # Logwatching for other mediaflux logfiles (except for http.log)
+  cookbook_file "/etc/logwatch/scripts/services/mediaflux" do
+    source "logwatch-mediaflux-script"
+    mode 0755
+  end
+
+  cookbook_file "/etc/logwatch/conf/services/mediaflux.conf" do
+    source "logwatch-mediaflux-service"
+  end
+  
+  cookbook_file "/etc/logwatch/conf/logfiles/mediaflux.conf" do
+    source "logwatch-mediaflux-logfile"
+  end
 end
