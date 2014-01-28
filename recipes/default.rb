@@ -91,6 +91,10 @@ directory installers do
   mode 0750
 end
 
+bash "chown installers" do
+  code "chown -R #{mflux_user} #{installers}"
+end
+
 if url == nil
   if ! ::File.exists?("#{installers}/#{installer}")
     raise 'You must either download the Mediaflux installer by hand' + 
