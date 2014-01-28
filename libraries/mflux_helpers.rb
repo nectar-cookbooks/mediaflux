@@ -1,9 +1,7 @@
 module MfluxHelpers
   def java_memory_model()
     version = `java -version 2>&1`
-    if /64-Bit/.match(version) then '64'
-    elsif /32-Bit/.match(version) then '32'
-    else raise "Cannot figure out jvm memory model from #{version}" end
+    if /64-Bit/.match(version) then '64' else '32' end
   end
 
   def java_memory_max(arg) 
