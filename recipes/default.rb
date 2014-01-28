@@ -217,7 +217,7 @@ ruby_block "check licence" do
     # Can we find a licence file?
     have_licence = ::File.exists?("#{mflux_config}/licence.xml") ||
       ::File.exists?("#{installers}/licence.xml")
-    log "Please place a copy of your MediaFlux licence file in " +
+    raise "Please place a copy of your MediaFlux licence file in " +
       "#{mflux_user_home}/installers/licence.xml.  Then rerun this recipe"
   end
 end
