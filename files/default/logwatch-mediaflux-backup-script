@@ -1,0 +1,47 @@
+#!/bin/env perl
+use strict;
+use Logwatch ':dates';
+
+my $ThisLine;
+my $Run_count = 0;
+my $Start_count = 0;
+my $End_count = 0;
+my $Fail_count = 0;
+
+# Do the date filtering within the script so that we get to know
+# when there are no matching lines in the logfile.  (Note that we
+# will ignore the timezone for the purposes range selection, so
+# logwatch and the backup script need to have the same notion of 
+# local time.)
+my $SearchDate = TimeFilter('%Y-%m-%dT%H:%M:%S[+-][0-9]{4}');
+my $Filter = qr/^\*\*\*.*$SearchDate$/;
+
+while (defined($ThisLine = <STDIN>)) {
+    if ($ThisLine =~ $Filter) {
+	if ($ThisLine =~ /Starting mediaflux backup run/) {
+	    $Run_count += 1;
+	} elsif ($ThisLine =~ /(Running|Replicating|Exporting)/) {
+	    $Start_count += 1;
+	} elsif ($ThisLine =~ /completed/) {
+	    $End_count += 1;
+	} elsif ($ThisLine =~ /failed/) {
+	    $Fail_count += 1;
+	    print "$ThisLine\n";
+	}
+    }
+}
+
+# Analyse the event counts ...
+if ($Run_count == 0) {
+    print "WARNING: No mediaflux backup runs attempted!\n";
+} elsif ($Run_count > $Start_count) {
+    my $diff = $Start_count - $Run_count;
+    print "WARNING: mediaflux backup attempt failed to start $diff times\n";
+} else {
+    print "Mediaflux backups started $Run_count times.\n";
+}
+if ($Start_count != $End_count) {
+    print "WARNING: Some mediaflux backup steps did not complete normally!\n";
+} elsif ($Start_count > 0) {
+    print "All backup steps completed normally.\n";
+}

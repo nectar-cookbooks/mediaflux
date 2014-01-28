@@ -1,0 +1,7 @@
+LogFile = /opt/mflux/volatile/logs/internal*.log
+LogFile = /opt/mflux/volatile/logs/mediaflux-server*.log
+LogFile = /opt/mflux/volatile/logs/replication*.log
+LogFile = /opt/mflux/volatile/logs/scheduled-jobs*.log
+LogFile = /opt/mflux/volatile/logs/start-error*.log
+LogFile = /opt/mflux/volatile/logs/unix-start*.log
+LogFile = /opt/mflux/volatile/logs/syslog*.log
