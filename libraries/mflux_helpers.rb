@@ -13,7 +13,7 @@ module MfluxHelpers
     else
       # Intuit a sensible max size from the platform and the available memory.
       if java_memory_model() == '32' then
-        max = if platform?("windows") then 1500 else 2048 end
+        max = if node.platform?("windows") then 1500 else 2048 end
       else
         max = (/([0-9]+)kB/.match(node['memory']['total'])[1].to_i / 1024) - 512
       end
