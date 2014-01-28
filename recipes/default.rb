@@ -48,14 +48,6 @@ if ! installers.start_with?('/') then
 end
 installer = node['mediaflux']['installer']
 
-# Can we find a licence file?
-have_licence = ::File.exists?("#{mflux_config}/licence.xml") ||
-   ::File.exists?("#{installers}/licence.xml")
-
-# Can we find an SSL cert file?
-have_certs = ::File.exists?("#{mflux_config}/certs") ||
-   ::File.exists?("#{installers}/certs")
-
 # Do we need an SSL cert file?
 need_certs = node['mediaflux']['https_port'] != ''
 
@@ -216,48 +208,49 @@ cookbook_file "/etc/init.d/mediaflux" do
   source "mediaflux-init.sh"
 end
 
-if ! have_licence then
-  # This is as far as we can go without a licence file ... 
-  log "Please place a copy of your MediaFlux licence file in " +
-      "#{mflux_user_home}/installers/licence.xml and then rerun this recipe" do
-    level :fatal
-  end
-  ruby_block "bail-out" do
-    block do 
-      raise "Bailing out - see previous 'fatal' log message"
-    end
+#
+# Since the license and keystore may be delivered by another recipe,
+# these checks must be done during convergence ...
+#
+ruby_block "check licence" do
+  block do
+    # Can we find a licence file?
+    have_licence = ::File.exists?("#{mflux_config}/licence.xml") ||
+      ::File.exists?("#{installers}/licence.xml")
+    log "Please place a copy of your MediaFlux licence file in " +
+      "#{mflux_user_home}/installers/licence.xml.  Then rerun this recipe"
   end
 end
 
-if ! have_certs && need_certs then
-  log "Please create or obtain an SSL certificate, and copy it to " +
-      "#{mflux_user_home}/installers/certs and then rerun this recipe. " +
-      "(A self-signed certificate will do ... for now.)" do
-    level :fatal
-  end
-  ruby_block "bail-out" do
-    block do 
-      raise "Bailing out - see previous 'fatal' log message"
+if need_certs then
+  ruby_block "check certs" do
+    block do
+      # Can we find a keystore?
+      if ! (::File.exists?("#{mflux_config}/certs") ||
+            ::File.exists?("#{installers}/certs")) then
+        raise "Please create a suitable keystore and put here - " +
+          "#{mflux_user_home}/installers/certs.  Then rerun this recipe."
+      end
     end
   end
 end
 
 # Install licence file if it isn't already installed
-bash "copy-licence" do
+bash "copy licence" do
   code "cp #{installers}/licence.xml #{mflux_config}/licence.xml" +
        " && chmod 444 #{mflux_config}/licence.xml"
   creates "#{mflux_config}/licence.xml"
   not_if { ::File.exists?("#{mflux_config}/licence.xml") }
 end
 
-# Install SSL cert if it isn't already installed
-if have_certs then
-  bash "copy-certs" do
-    code "cp #{installers}/certs #{mflux_config}/certs" +
-         " && chmod 444 #{mflux_config}/certs"
-    creates "#{mflux_config}/certs"
-    not_if { ::File.exists?("#{mflux_config}/certs") }
-  end
+# Install "certs" keystore if it isn't already installed
+bash "copy certs" do
+  code "cp #{installers}/certs #{mflux_config}/certs" +
+    " && chmod 444 #{mflux_config}/certs"
+  creates "#{mflux_config}/certs"
+  only_if {
+    ::File.exists?("#{installers}/certs") && 
+    ! ::File.exists?("#{mflux_config}/certs") }
 end
 
 template "#{mflux_config}/initial_mflux_conf.tcl" do 
