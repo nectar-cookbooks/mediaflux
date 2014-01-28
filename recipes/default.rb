@@ -212,20 +212,16 @@ end
 # Since the license and keystore may be delivered by another recipe,
 # these checks must be done during convergence ...
 #
-ruby_block "check licence" do
+ruby_block "check licence and certs" do
   block do
-    # Can we find a licence file?
-    have_licence = ::File.exists?("#{mflux_config}/licence.xml") ||
-      ::File.exists?("#{installers}/licence.xml")
-    raise "Please place a copy of your MediaFlux licence file in " +
-      "#{mflux_user_home}/installers/licence.xml.  Then rerun this recipe"
-  end
-end
-
-if need_certs then
-  ruby_block "check certs" do
-    block do
-      # Can we find a keystore?
+    # Can we find a licence file (installed or in the installer area)?
+    if ! (::File.exists?("#{mflux_config}/licence.xml") ||
+          ::File.exists?("#{installers}/licence.xml")) then
+      raise "Please place a copy of your MediaFlux licence file in " +
+        "#{mflux_user_home}/installers/licence.xml.  Then rerun this recipe"
+    end
+    if need_certs then
+      # Can we find a keystore (installed or not ...)?
       if ! (::File.exists?("#{mflux_config}/certs") ||
             ::File.exists?("#{installers}/certs")) then
         raise "Please create a suitable keystore and put here - " +
