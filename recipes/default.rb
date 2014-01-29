@@ -49,14 +49,6 @@ if ! installers.start_with?('/') then
 end
 installer = node['mediaflux']['installer']
 
-# Can we find a licence file?
-have_licence = ::File.exists?("#{mflux_config}/licence.xml") ||
-   ::File.exists?("#{installers}/licence.xml")
-
-# Can we find an SSL cert file?
-have_certs = ::File.exists?("#{mflux_config}/certs") ||
-   ::File.exists?("#{installers}/certs")
-
 # Do we need an SSL cert file?
 need_certs = node['mediaflux']['https_port'] != ''
 
@@ -90,6 +82,10 @@ end
 directory installers do
   owner mflux_user
   mode 0750
+end
+
+bash "chown installers" do
+  code "chown -R #{mflux_user} #{installers}"
 end
 
 if url == nil
@@ -213,48 +209,45 @@ cookbook_file "/etc/init.d/mediaflux" do
   source "mediaflux-init.sh"
 end
 
-if ! have_licence then
-  # This is as far as we can go without a licence file ... 
-  log "Please place a copy of your MediaFlux licence file in " +
-      "#{mflux_user_home}/installers/licence.xml and then rerun this recipe" do
-    level :fatal
-  end
-  ruby_block "bail-out" do
-    block do 
-      raise "Bailing out - see previous 'fatal' log message"
+#
+# Since the license and keystore may be delivered by another recipe,
+# these checks must be done during convergence ...
+#
+ruby_block "check licence and certs" do
+  block do
+    # Can we find a licence file (installed or in the installer area)?
+    if ! (::File.exists?("#{mflux_config}/licence.xml") ||
+          ::File.exists?("#{installers}/licence.xml")) then
+      raise "Please place a copy of your MediaFlux licence file in " +
+        "#{mflux_user_home}/installers/licence.xml.  Then rerun this recipe"
     end
-  end
-end
-
-if ! have_certs && need_certs then
-  log "Please create or obtain an SSL certificate, and copy it to " +
-      "#{mflux_user_home}/installers/certs and then rerun this recipe. " +
-      "(A self-signed certificate will do ... for now.)" do
-    level :fatal
-  end
-  ruby_block "bail-out" do
-    block do 
-      raise "Bailing out - see previous 'fatal' log message"
+    if need_certs then
+      # Can we find a keystore (installed or not ...)?
+      if ! (::File.exists?("#{mflux_config}/certs") ||
+            ::File.exists?("#{installers}/certs")) then
+        raise "Please create a suitable keystore and put here - " +
+          "#{mflux_user_home}/installers/certs.  Then rerun this recipe."
+      end
     end
   end
 end
 
 # Install licence file if it isn't already installed
-bash "copy-licence" do
+bash "copy licence" do
   code "cp #{installers}/licence.xml #{mflux_config}/licence.xml" +
        " && chmod 444 #{mflux_config}/licence.xml"
   creates "#{mflux_config}/licence.xml"
   not_if { ::File.exists?("#{mflux_config}/licence.xml") }
 end
 
-# Install SSL cert if it isn't already installed
-if have_certs then
-  bash "copy-certs" do
-    code "cp #{installers}/certs #{mflux_config}/certs" +
-         " && chmod 444 #{mflux_config}/certs"
-    creates "#{mflux_config}/certs"
-    not_if { ::File.exists?("#{mflux_config}/certs") }
-  end
+# Install "certs" keystore if it isn't already installed
+bash "copy certs" do
+  code "cp #{installers}/certs #{mflux_config}/certs" +
+    " && chmod 444 #{mflux_config}/certs"
+  creates "#{mflux_config}/certs"
+  only_if {
+    ::File.exists?("#{installers}/certs") && 
+    ! ::File.exists?("#{mflux_config}/certs") }
 end
 
 template "#{mflux_config}/initial_mflux_conf.tcl" do 
@@ -289,26 +282,42 @@ if node['mediaflux']['defer_start'] then
   end
 else
   service 'mediaflux' do
-    action [:enable, :restart]
-    notifies :run, "bash[mediaflux-running]", :immediately    
+    action :enable
+  end
+
+  service 'mediaflux-restart-A' do
+    service_name 'mediaflux'
+    action :restart
+    notifies :run, "bash[mediaflux-running-A]", :immediately    
+  end
+
+  bash "mediaflux-running-A" do
+    action :nothing
+    user mflux_user
+    code ". /etc/mediaflux/mfluxrc ; " +
+      "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
+      "    --retry-connrefused --no-check-certificate -O /dev/null " +
+      "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
+    notifies :run, "bash[run-server-config]", :immediately    
   end
 
   # Some initial configuration of the mediaflux service
   bash 'run-server-config' do
+    action :nothing
     code ". /etc/mediaflux/servicerc && " +
       "#{mfcommand} logon $MFLUX_DOMAIN $MFLUX_USER $MFLUX_PASSWORD && " +
       "#{mfcommand} source #{mflux_config}/initial_mflux_conf.tcl && " +
       "#{mfcommand} logoff"
-    notifies :restart, "service[mediaflux-restart]", :immediately    
+    notifies :restart, "service[mediaflux-restart-B]", :immediately    
   end
 
-  service 'mediaflux-restart' do
+  service 'mediaflux-restart-B' do
     service_name 'mediaflux'
     action :nothing
-    notifies :run, "bash[mediaflux-running]", :immediately    
+    notifies :run, "bash[mediaflux-running-B]", :immediately    
   end
 
-  bash "mediaflux-running" do
+  bash "mediaflux-running-B" do
     action :nothing
     user mflux_user
     code ". /etc/mediaflux/mfluxrc ; " +
