@@ -282,26 +282,42 @@ if node['mediaflux']['defer_start'] then
   end
 else
   service 'mediaflux' do
-    action [:enable, :restart]
-    notifies :run, "bash[mediaflux-running]", :immediately    
+    action :enable
+  end
+
+  service 'mediaflux-restart-A' do
+    service_name 'mediaflux'
+    action :restart
+    notifies :run, "bash[mediaflux-running-A]", :immediately    
+  end
+
+  bash "mediaflux-running-A" do
+    action :nothing
+    user mflux_user
+    code ". /etc/mediaflux/mfluxrc ; " +
+      "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
+      "    --retry-connrefused --no-check-certificate -O /dev/null " +
+      "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
+    notifies :run, "bash[run-server-config]", :immediately    
   end
 
   # Some initial configuration of the mediaflux service
   bash 'run-server-config' do
+    action :nothing
     code ". /etc/mediaflux/servicerc && " +
       "#{mfcommand} logon $MFLUX_DOMAIN $MFLUX_USER $MFLUX_PASSWORD && " +
       "#{mfcommand} source #{mflux_config}/initial_mflux_conf.tcl && " +
       "#{mfcommand} logoff"
-    notifies :restart, "service[mediaflux-restart]", :immediately    
+    notifies :restart, "service[mediaflux-restart-B]", :immediately    
   end
 
-  service 'mediaflux-restart' do
+  service 'mediaflux-restart-B' do
     service_name 'mediaflux'
     action :nothing
-    notifies :run, "bash[mediaflux-running]", :immediately    
+    notifies :run, "bash[mediaflux-running-B]", :immediately    
   end
 
-  bash "mediaflux-running" do
+  bash "mediaflux-running-B" do
     action :nothing
     user mflux_user
     code ". /etc/mediaflux/mfluxrc ; " +
