@@ -141,8 +141,8 @@ you have the following choices:
 * Ignore the security concerns, and set the "run_as_root" attribute to "true".
   This approach is not recommmended!
 
-Testing
-=======
+Confidence testing
+==================
 
 Once DaRIS is installed, we recommend that you do the following simple tests:
 
@@ -309,17 +309,5 @@ The differences are pretty minor, but worth noting.
 
 * In a vanilla DaRIS Mediaflux installation, the admin password is obfuscated 
   by base64 encoding it.  This only gives an illusion of security so we have
-  eliminated that.
-
-TO-DO LIST
-==========
-
-* Creation / installation of a self-signed certificate.  Could use the LWRP 
-resource that is being added to the standard "openssl" cookbook in 
-https://tickets.opscode.com/browse/COOK-847.
-
-* Implement an SELinux policy module for Mediaflux
-
-* Implement purging of old backups from Swift
-
-* Implement incremental backups and backup rotation
+  eliminated that.  (If that concerns you / your local security folk, open an
+  issue and I'll see what we can do.)
