@@ -1,6 +1,11 @@
 Change Log for the Mediaflux cookbook
 =====================================
 
+Version 0.9.2
+ - Bug fixes for sensing / configuring 32 bit JVMs
+ - Allow for the addition of licence.xml and certs files to the installers directory by other recipes
+ - Fix problems with the server start/restart "scheduling"
+
 Version 0.9.1
  - Bug fixes and enhancements to backup logwatching
 
