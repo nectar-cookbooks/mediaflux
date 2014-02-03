@@ -31,8 +31,9 @@ to fulfill this dependency.  If you want to, you can set node attributes to
 override the defaults; see the http://community.opscode.com/cookbooks/java for
 the relevant attributes
 
-This cookbook should in theory be platform independent ... across unix-like 
-OSes.  The cookbook will not work on Windows.
+The recipes in this cookbook should work on x86 and x86-64 systems running
+recent Ubuntu, RHEL compatible and Fedora distros (at least).  Windows is
+is not supported.
 
 If you enable saving backups to a SWIFT object store (see below), you need
 to make sure that `node['setup']['openstack_clients']` is false.  The 
