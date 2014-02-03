@@ -46,7 +46,7 @@ Recipes
 * `mediaflux::aterm` - installs just the Mediaflux "aterm" and "mfcommand"
   utilities.
 * `mediaflux::aar` - installs just the Mediaflux "aar" utility.
-
+* `mediaflux::test_cert` - generates a self-signed cert suitable for testing (only)
 
 Attributes
 ==========
