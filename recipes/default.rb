@@ -36,7 +36,7 @@ mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
 mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
-mflux_stores = node['mediaflux']['stores']
+mflux_stores = Array.new(node['mediaflux']['stores'] || [])
 url = node['mediaflux']['installer_url']
 
 domain = node['mediaflux']['authentication_domain'] || 'users'

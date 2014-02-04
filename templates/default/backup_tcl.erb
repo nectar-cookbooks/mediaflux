@@ -1,7 +1,7 @@
 server.database.backup :url file:///$dir/database
 server.database.lock :action abort \
     :msg "The Mediaflux database and stores are being backed up"
-<% @stores.each do |store] %>
+<% @stores.each do |store| %>
 asset.archive.create :url file:///$dir/<%= store %>.aar :where content '<%= store %>
 <% end %>
 server.database.unlock
