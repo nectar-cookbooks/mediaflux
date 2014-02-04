@@ -36,6 +36,7 @@ mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
 mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
+mflux_stores = Array.new(node['mediaflux']['stores'] || [])
 url = node['mediaflux']['installer_url']
 
 domain = node['mediaflux']['authentication_domain'] || 'users'
@@ -274,57 +275,49 @@ include_recipe "mediaflux::aar"
 include_recipe "mediaflux::aterm"
 
 
-# The 'defer_start' hack allows another recipe to do stuff
-# before the mediaflux service is started.
-if node['mediaflux']['defer_start'] then
-  service 'mediaflux' do
-    action :enable
-  end
-else
-  service 'mediaflux' do
-    action :enable
-  end
+service 'mediaflux' do
+  action :enable
+end
 
-  service 'mediaflux-restart-A' do
-    service_name 'mediaflux'
-    action :restart
-    notifies :run, "bash[mediaflux-running-A]", :immediately    
-  end
+service 'mediaflux-restart-A' do
+  service_name 'mediaflux'
+  action :restart
+  notifies :run, "bash[mediaflux-running-A]", :immediately    
+end
 
-  bash "mediaflux-running-A" do
-    action :nothing
-    user mflux_user
-    code ". /etc/mediaflux/mfluxrc ; " +
-      "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
-      "    --retry-connrefused --no-check-certificate -O /dev/null " +
-      "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
-    notifies :run, "bash[run-server-config]", :immediately    
-  end
+bash "mediaflux-running-A" do
+  action :nothing
+  user mflux_user
+  code ". /etc/mediaflux/mfluxrc ; " +
+    "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
+    "    --retry-connrefused --no-check-certificate -O /dev/null " +
+    "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
+  notifies :run, "bash[run-server-config]", :immediately    
+end
 
-  # Some initial configuration of the mediaflux service
-  bash 'run-server-config' do
-    action :nothing
-    code ". /etc/mediaflux/servicerc && " +
-      "#{mfcommand} logon $MFLUX_DOMAIN $MFLUX_USER $MFLUX_PASSWORD && " +
-      "#{mfcommand} source #{mflux_config}/initial_mflux_conf.tcl && " +
-      "#{mfcommand} logoff"
-    notifies :restart, "service[mediaflux-restart-B]", :immediately    
-  end
+# Some initial configuration of the mediaflux service
+bash 'run-server-config' do
+  action :nothing
+  code ". /etc/mediaflux/servicerc && " +
+    "#{mfcommand} logon $MFLUX_DOMAIN $MFLUX_USER $MFLUX_PASSWORD && " +
+    "#{mfcommand} source #{mflux_config}/initial_mflux_conf.tcl && " +
+    "#{mfcommand} logoff"
+  notifies :restart, "service[mediaflux-restart-B]", :immediately    
+end
 
-  service 'mediaflux-restart-B' do
-    service_name 'mediaflux'
-    action :nothing
-    notifies :run, "bash[mediaflux-running-B]", :immediately    
-  end
+service 'mediaflux-restart-B' do
+  service_name 'mediaflux'
+  action :nothing
+  notifies :run, "bash[mediaflux-running-B]", :immediately    
+end
 
-  bash "mediaflux-running-B" do
-    action :nothing
-    user mflux_user
-    code ". /etc/mediaflux/mfluxrc ; " +
-      "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
-      "    --retry-connrefused --no-check-certificate -O /dev/null " +
-      "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
-  end
+bash "mediaflux-running-B" do
+  action :nothing
+  user mflux_user
+  code ". /etc/mediaflux/mfluxrc ; " +
+    "wget ${MFLUX_TRANSPORT}://${MFLUX_HOST}:${MFLUX_PORT}/ " +
+    "    --retry-connrefused --no-check-certificate -O /dev/null " +
+    "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
 end
 
 backup_dir = node['mediaflux']['backup_dir'] || "#{mflux_home}/volatile/backups"
@@ -344,7 +337,8 @@ if backup_store != '' then
   include_recipe 'setup::openstack-clients'
 end
 
-template "#{mflux_home}/bin/backup.sh" do
+template "backup.sh" do
+  path "#{mflux_home}/bin/backup.sh"
   source 'backup_sh.erb'
   owner mflux_user
   mode 0700
@@ -356,10 +350,14 @@ template "#{mflux_home}/bin/backup.sh" do
              })
 end
 
-cookbook_file "#{mflux_config}/backup.tcl" do
-  source 'backup.tcl'
+template "backup.tcl" do
+  path "#{mflux_config}/backup.tcl"
+  source 'backup_tcl.erb'
   owner mflux_user
   mode 0600
+  variables ({
+               'stores' => mflux_stores
+             })
 end
 
 times = node.default['mediaflux']['backup_cron_times']

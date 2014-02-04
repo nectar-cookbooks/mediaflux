@@ -67,5 +67,4 @@ node.default['mediaflux']['backup_cron_mailto'] = nil
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
 node.from_file(run_context.resolve_attribute(*parse_attribute_file_spec("java")))
 
-# This is "internal" to the recipe and others that depend on it.
-node.default['mediaflux']['defer_start'] = false
+node.default['mediaflux']['stores'] = []
