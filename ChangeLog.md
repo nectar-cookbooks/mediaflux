@@ -1,9 +1,13 @@
 Change Log for the Mediaflux cookbook
 =====================================
 
+Version 0.9.4
+-------------
+ - Change to generate separate asset archives for each store (issue #18)
+
 Version 0.9.3
 -------------
- - Added recipe to generate a self-signed test certificate
+ - Added recipe to generate a self-signed test certificate (issue #16)
 
 Version 0.9.2
 -------------
