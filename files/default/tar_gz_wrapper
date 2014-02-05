@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# tar_gz_wrapper backup-dir store-name 
+#
+
+PATH=/bin:/usr/bin
+LOG=/opt/mflux/volatile/log/backup.log
+OUT=$1/$2.tar.gz
+echo Archiving assets for store $1 to $OUT >> $LOG
+tar -cfz $OUT /opt/mflux/volatile/stores/$2 >> $LOG 2>&1 

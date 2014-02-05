@@ -70,7 +70,7 @@ end
 external_asset_backup = node['mediaflux']['external_asset_backup']
 backup_wrapper = node['mediaflux']['backup_wrapper']
 if ! /^\/.+/ then
-  backup_wrapper = "#{mflux_bin}/#{backup_wrapper}#"
+  backup_wrapper = "#{mflux_bin}/#{backup_wrapper}"
 end
 
 template "backup.tcl" do
@@ -83,6 +83,16 @@ template "backup.tcl" do
                'external_asset_backup' => external_asset_backup,
                'backup_wrapper' => backup_wrapper
              })
+end
+
+wrappers = ['tar_gz_wrapper']
+wrappers.each do |wrapper|
+  cookbook_file "#{mflux_bin}/#{wrapper}" do
+    source wrapper
+    mode 0555
+    owner mflux_user
+    group mflux_user
+  end
 end
 
 times = node['mediaflux']['backup_cron_times']
