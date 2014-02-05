@@ -4,7 +4,8 @@
 #
 
 PATH=/bin:/usr/bin
-LOG=/opt/mflux/volatile/log/backup.log
+MFLUX_HOME=<%= @mflux_home %>
+LOG=${MFLUX_HOME}/volatile/logs/backup.log
 OUT=$1/$2.tar.gz
 echo Archiving assets for store $1 to $OUT >> $LOG
-tar -cfz $OUT /opt/mflux/volatile/stores/$2 >> $LOG 2>&1 
+tar -cfz $OUT ${MFLUX_HOME}/volatile/stores/$2 >> $LOG 2>&1 

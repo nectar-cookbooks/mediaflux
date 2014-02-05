@@ -87,11 +87,14 @@ end
 
 wrappers = ['tar_gz_wrapper']
 wrappers.each do |wrapper|
-  cookbook_file "#{mflux_bin}/#{wrapper}" do
-    source wrapper
+  template "#{mflux_bin}/#{wrapper}" do
+    source "#{wrapper}.erb"
     mode 0555
     owner mflux_user
     group mflux_user
+    variables ({
+                 'mflux_home' => mflux_home
+               }) 
   end
 end
 
