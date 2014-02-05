@@ -29,6 +29,7 @@
 
 mflux_home = node['mediaflux']['home']
 mflux_bin = "#{mflux_home}/bin"
+mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
 
 # Note that we take a copy of the 'stores' array ... so that downstream
