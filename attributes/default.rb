@@ -63,6 +63,9 @@ node.default['mediaflux']['backup_cron_mailto'] = nil
 node.default['mediaflux']['backup_cron_times'] = [ "0", "2", "*", "*", "*" ]
 node.default['mediaflux']['backup_cron_mailto'] = nil
 
+node.default['mediaflux']['external_asset_backup'] = false
+node.default['mediaflux']['backup_wrapper'] = 'tar_gz_wrapper'
+
 # This workaround comes from CHEF-4234.  It forces the "java" recipe attributes
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
 node.from_file(run_context.resolve_attribute(*parse_attribute_file_spec("java")))

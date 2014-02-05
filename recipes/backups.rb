@@ -28,6 +28,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 mflux_home = node['mediaflux']['home']
+mflux_bin = "#{mflux_home}/bin"
 mflux_user = node['mediaflux']['user']
 
 # Note that we take a copy of the 'stores' array ... so that downstream
@@ -36,9 +37,9 @@ mflux_user = node['mediaflux']['user']
 mflux_stores = Array.new(node['mediaflux']['stores'] || [])
 
 backup_dir = node['mediaflux']['backup_dir'] || "#{mflux_home}/volatile/backups"
-backup_replica = node['mediaflux']['backup_replica'] || ''
-backup_store = node['mediaflux']['backup_store'] || ''
-backup_keep_days = node['mediaflux']['backup_keep_days'] || 5
+replica = node['mediaflux']['backup_replica'] || ''
+object_store = node['mediaflux']['backup_store'] || ''
+keep_days = node['mediaflux']['backup_keep_days'] || 5
 
 directory backup_dir do
   owner mflux_user
@@ -46,7 +47,7 @@ directory backup_dir do
   mode 0750
 end
 
-if backup_store != '' then
+if object_store != '' then
   node.normal['setup']['openstack_rc_path'] = '/etc/mediaflux/openstackrc'
   node.normal['setup']['openstack_rc_group'] = mflux_user
   include_recipe 'setup::openstack-clients'
@@ -59,10 +60,16 @@ template "backup.sh" do
   mode 0700
   variables ({
                'backup_dir' => backup_dir,
-               'replica' => backup_replica,
-               'store' => backup_store,
-               'keep_days' => backup_keep_days
+               'replica' => replica,
+               'object_store' => object_store,
+               'keep_days' => keep_days
              })
+end
+
+external_asset_backup = node['mediaflux']['external_asset_backup']
+backup_wrapper = node['mediaflux']['backup_wrapper']
+if ! /^\/.+/ then
+  backup_wrapper = "#{mflux_bin}/#{backup_wrapper}#"
 end
 
 template "backup.tcl" do
@@ -71,12 +78,14 @@ template "backup.tcl" do
   owner mflux_user
   mode 0600
   variables ({
-               'stores' => mflux_stores
+               'stores' => mflux_stores,
+               'external_asset_backup' => external_asset_backup,
+               'backup_wrapper' => backup_wrapper
              })
 end
 
-times = node.default['mediaflux']['backup_cron_times']
-mailto = node.default['mediaflux']['backup_cron_mailto']
+times = node['mediaflux']['backup_cron_times']
+mailto = node['mediaflux']['backup_cron_mailto']
 if node['mediaflux']['backup_cron'] then
   if mailto && mailto != '' then
     cron 'mediaflux_backup_cron' do
