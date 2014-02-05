@@ -17,6 +17,7 @@ KEEP_DAYS="<%= @keep_days %>"
 TIMESTAMP="date -Iseconds"
 
 echo >> $LOG
+chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $LOG
 echo "*** Starting mediaflux backup run - " `$TIMESTAMP` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
