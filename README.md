@@ -312,10 +312,52 @@ location above.
 Restoring backups
 -----------------
 
-To be described ...
+The procedure for reconstructing a Mediaflux instance from backups is roughly
+as follows:
 
-Differences from standard and DaRIS Mediaflux
-=============================================
+1.  If there is any possibility that you might want to recover data from the
+    existing (possibly damaged) Mediaflux instance, save the existing 
+    installation, including everything in the `volatile` tree.  (If you have
+    `volatile` as a symlink to another disk area, then make sure that you
+    save that as well.
+
+    If you have sufficient spare disc space, simply use the `mv` command to
+    rename the respective trees out of the way.  Otherwise "archive, compress 
+    and copy" using standard utilities.
+
+2.  Use `mkdir` to create clean directories for the Mediaflux installation
+    and the target of the `volatile` symlink.
+
+3.  Use chef-solo to run the recipes for building your Mediaflux (etc) 
+    installation.
+
+4.  Start an `aterm` session using the admin account.
+
+5.  Restore the database by running the Mediaflux command 
+
+        service.database.restore :url file:///..../database
+
+    where the url refers to a local copy of the database backup.
+
+6.  For each store:
+
+    * If you used `asset.archive.create`, then use 
+
+            asset.archive.restore :url file:///..../<storeName>.aar \
+                    :restore-missing-content true
+      
+      to restore the assets.  Note: this won't work with older versions 
+      of Mediaflux that don't support that option.
+
+    * If you used an external backup wrapper, use the corresponding
+      utility to restore the files from the backup into the file 
+      system directory or the store (i.e. `.../volatile/stores/<storeName>`). 
+
+Once this is done, use your portal software and attempt to access some assets
+to check that files have indeed been restored in the correct place.
+
+Differences between this, standard Mediaflux and DaRIS Mediaflux
+================================================================
 
 The differences are pretty minor, but worth noting.
 
