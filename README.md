@@ -29,7 +29,7 @@ Dependencies
 Mediaflux is a Java application, and this cookbook uses the OpenJDK Java 7 JDK
 to fulfill this dependency.  If you want to, you can set node attributes to
 override the defaults; see the http://community.opscode.com/cookbooks/java for
-the relevant attributes
+the relevant attributes.
 
 The recipes in this cookbook should work on x86 and x86-64 systems running
 recent Ubuntu, RHEL compatible and Fedora distros (at least).  Windows is
@@ -48,6 +48,7 @@ Recipes
   utilities.
 * `mediaflux::aar` - installs just the Mediaflux "aar" utility.
 * `mediaflux::test_cert` - generates a self-signed cert suitable for testing (only)
+* `mediaflux::backups` - sets up Mediaflux backups.
 
 Attributes
 ==========
@@ -78,13 +79,17 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['authentication_domain']` - A Mediaflux authentication domain name for users.  This defaults to the namespace prefix.  If it is different, then you will most likely need to "tweak" some of the ${ns}_pssd package TCL code. 
 * `node['mediaflux']['jvm_memory_max']` - The server's heap size (in Mbytes)
 * `node['mediaflux']['jvm_memory_perm_max']` - The server's permgen size (in Mbytes)
-* `node['mediaflux']['backup_dir']` - The locations where backups are created.  This defaults to the "$MFLUX_HOME/volatile/backups".
+* `node['mediaflux']['backup_dir']` - The primary location where backups are saved.  This defaults to the "$MFLUX_HOME/volatile/backups".
 * `node['mediaflux']['backup_replica']` - The location for the rsync backup replica.  If unset, there is no rsync replication.
-* `node['mediaflux']['backup_store']` - The Swift Object Store storename for saving backups.  See below for more details.  If unset, backups are not saved to Swift.
+* `node['mediaflux']['object_store']` - The Swift Object Store storename for saving backups.  See below for details.  If unset, backups are not saved to Swift.
 * `node['mediaflux']['backup_keep_days']` - Keep backups for this many days. 
 * `node['mediaflux']['backup_cron']` - If true, a cron job is created to run the backups.  Defaults to false.
 * `node['mediaflux']['backup_cron_mailto']` - Mail account for backup cron email.
 * `node['mediaflux']['backup_cron_times']` - The backup cron schedule.  Defaults to `[ "0", "2", "*", "*", "*" ]`.
+* `node['mediaflux']['stores']` - This lists the Mediaflux stores to be backed up.  (Downstream recipes may inject additional stores dynamically; see below.)
+* `node['mediaflux']['external_asset_backup']` - This determines whether stores are backed up using Mediaflux `asset.archive.create` or by running an external backup wrapper.  Defaults to true (for now) due to issues with Mediaflux the `asset.archive.*` services.
+* `node['mediaflux']['backup_wrapper']` - This gives the name of the external backup wrapper command.  See below for details. Defaults to "tar_gz_wrapper".
+
 
 Java installation details
 =========================
@@ -253,6 +258,30 @@ backup sets for a fixed number of days:
 
 The recipe will optionally create a cron job to run the backups.  You can specify the schedule for the job, and an optional email address for mailing failure reports to.
 
+Creating the backups
+--------------------
+
+The backups are created by a Mediaflux TCL script.  The standard version of
+this script first uses the Mediaflux 'system.database.backup' service to 
+create a backup of the primary Mediaflux database.  Then if backs up each 
+of the Mediaflux stores in the `stores` list by running 
+'assets.archive.create' for the store, or using 'exec' to launch an 
+external backup wrapper.
+
+Backup wrappers are external applications (e.g. shell scripts) that take two 
+command-line arguments.  
+
+* The first argument is the (absolute) pathname for the directory into which 
+backup files should be written.  (The pathname typically includes the current
+date, or something else to denote the backup in the backup cycle.)
+* The second argument is the simple name of the Mediaflux store.
+
+Standard backup wrappers are placed in the Mediaflux `bin` directory, and
+are generated from recipe templates.  However, you are free to create your
+own backup wrapper by hand; e.g. copying the pattern of the existing 
+`tar_gv_wrapper`.  If you do this, provide the full pathname for the 
+wrapper as `external_backup_wrapper`.
+
 Replicating the backups using "rsync"
 -------------------------------------
 
@@ -279,6 +308,11 @@ run-list.  Refer to the "qcloud" cookbook documentation.
 Note that the "mediaflux::default" recipe overrides
 `node['qcloud']['openstack_rc_path']` to put the credentials file in the
 location above.
+
+Restoring backups
+-----------------
+
+To be described ...
 
 Differences from standard and DaRIS Mediaflux
 =============================================

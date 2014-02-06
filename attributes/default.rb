@@ -63,8 +63,15 @@ node.default['mediaflux']['backup_cron_mailto'] = nil
 node.default['mediaflux']['backup_cron_times'] = [ "0", "2", "*", "*", "*" ]
 node.default['mediaflux']['backup_cron_mailto'] = nil
 
+node.default['mediaflux']['external_asset_backup'] = true
+node.default['mediaflux']['backup_wrapper'] = 'tar_gz_wrapper'
+
+# This is just the initial list.  A downstream recipe may add additional
+# stores by looking up the relevant resource and appending to the relevant
+# template variable.
+node.default['mediaflux']['stores'] = []
+
 # This workaround comes from CHEF-4234.  It forces the "java" recipe attributes
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
 node.from_file(run_context.resolve_attribute(*parse_attribute_file_spec("java")))
 
-node.default['mediaflux']['stores'] = []

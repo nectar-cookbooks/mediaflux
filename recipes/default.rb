@@ -36,7 +36,7 @@ mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
 mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
-mflux_stores = Array.new(node['mediaflux']['stores'] || [])
+
 url = node['mediaflux']['installer_url']
 
 domain = node['mediaflux']['authentication_domain'] || 'users'
@@ -320,69 +320,4 @@ bash "mediaflux-running-B" do
     "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
 end
 
-backup_dir = node['mediaflux']['backup_dir'] || "#{mflux_home}/volatile/backups"
-backup_replica = node['mediaflux']['backup_replica'] || ''
-backup_store = node['mediaflux']['backup_store'] || ''
-backup_keep_days = node['mediaflux']['backup_keep_days'] || 5
-
-directory backup_dir do
-  owner mflux_user
-  group mflux_user
-  mode 0750
-end
-
-if backup_store != '' then
-  node.normal['setup']['openstack_rc_path'] = '/etc/mediaflux/openstackrc'
-  node.normal['setup']['openstack_rc_group'] = mflux_user
-  include_recipe 'setup::openstack-clients'
-end
-
-template "backup.sh" do
-  path "#{mflux_home}/bin/backup.sh"
-  source 'backup_sh.erb'
-  owner mflux_user
-  mode 0700
-  variables ({
-               'backup_dir' => backup_dir,
-               'replica' => backup_replica,
-               'store' => backup_store,
-               'keep_days' => backup_keep_days
-             })
-end
-
-template "backup.tcl" do
-  path "#{mflux_config}/backup.tcl"
-  source 'backup_tcl.erb'
-  owner mflux_user
-  mode 0600
-  variables ({
-               'stores' => mflux_stores
-             })
-end
-
-times = node.default['mediaflux']['backup_cron_times']
-mailto = node.default['mediaflux']['backup_cron_mailto']
-if node['mediaflux']['backup_cron'] then
-  if mailto && mailto != '' then
-    cron 'mediaflux_backup_cron' do
-      command "#{mflux_home}/bin/backup.sh"
-      minute times[0]
-      hour times[1]
-      day times[2]
-      month times[3]
-      weekday times[4]
-      user mflux_user
-      mailto mailto
-    end
-  else
-    cron 'mediaflux_backup_cron' do
-      command "#{mflux_home}/bin/backup.sh"
-      minute times[0]
-      hour times[1]
-      day times[2]
-      month times[3]
-      weekday times[4]
-      user mflux_user
-    end
-  end
-end
+include_recipe 'mediaflux::backups'

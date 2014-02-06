@@ -1,6 +1,10 @@
 Change Log for the Mediaflux cookbook
 =====================================
 
+Version 0.9.5
+-------------
+ - Support for store backups using an external backup wrapper (issue #20)
+
 Version 0.9.4
 -------------
  - Change to generate separate asset archives for each store (issue #18)
