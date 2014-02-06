@@ -87,7 +87,7 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['backup_cron_mailto']` - Mail account for backup cron email.
 * `node['mediaflux']['backup_cron_times']` - The backup cron schedule.  Defaults to `[ "0", "2", "*", "*", "*" ]`.
 * `node['mediaflux']['stores']` - This lists the Mediaflux stores to be backed up.  (Downstream recipes may inject additional stores dynamically; see below.)
-* `node['mediaflux']['external_asset_backup']` - This determines whether stores are backed up using Mediaflux `asset.archive.create` or by running an external backup wrapper.  Defaults to false.
+* `node['mediaflux']['external_asset_backup']` - This determines whether stores are backed up using Mediaflux `asset.archive.create` or by running an external backup wrapper.  Defaults to true (for now) due to issues with Mediaflux the `asset.archive.*` services.
 * `node['mediaflux']['backup_wrapper']` - This gives the name of the external backup wrapper command.  See below for details. Defaults to "tar_gz_wrapper".
 
 
