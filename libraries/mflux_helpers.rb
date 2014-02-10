@@ -16,6 +16,12 @@ module MfluxHelpers
         max = if node.platform?("windows") then 1500 else 2048 end
       else
         max = (/([0-9]+)kB/.match(node['memory']['total'])[1].to_i / 1024) - 512
+        if max > 4096 then
+          # Giving the JVM too much memory is likely to lead to poor performance
+          # if memory has been over-allocated, and/or if the JVM needs to do
+          # a full GC.  
+          max = 4096
+        end
       end
     end
     return max
