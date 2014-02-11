@@ -1,6 +1,11 @@
 Change Log for the Mediaflux cookbook
 =====================================
 
+Version 0.9.6
+-------------
+ - Cap the computed default max heap size at 4g on 64bit platforms.
+ - Fixed typo that was disabling backup to Swift
+
 Version 0.9.5
 -------------
  - Support for store backups using an external backup wrapper (issue #20)
