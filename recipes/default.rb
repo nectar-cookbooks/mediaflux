@@ -36,7 +36,7 @@ mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
 mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
-force_install = node['mediaflux']['force_install']
+reinstall = node['mediaflux']['reinstall']
 
 url = node['mediaflux']['installer_url']
 
@@ -102,22 +102,40 @@ else
   end
 end
 
-if ! File.exists?("#{mflux_home}/PACKAGE.MF") &&
-    node['mediaflux']['accept_license_agreement'] != true then
-  raise 'You must either run the Mediaflux installer by hand' + 
-    ' or set the mediaflux.accept_license_agreement attribute to true' +
-    ' to signify that you have read and accept the Mediaflux license'
+if ! File.exists?("#{mflux_home}/PACKAGE.MF") then
+  if node['mediaflux']['accept_license_agreement'] != true then
+    raise 'You must either run the Mediaflux installer by hand' + 
+      ' or set the mediaflux.accept_license_agreement attribute to true' +
+      ' to signify that you have read and accept the Mediaflux license'
+  end
 end
 
-bash "install-mediaflux" do 
-  only_if { ! File.exists?("#{mflux_home}/PACKAGE.MF") || force_install }
-  code <<-EOH
+if reinstall then
+  service 'mediaflux-stop-to-reinstall' do
+    service_name 'mediaflux'
+    action :stop
+  end
+  bash "install-mediaflux" do 
+    code <<-EOH
+java -jar #{installers}/#{installer} nogui << EOF
+accept
+#{mflux_home}
+y
+EOF
+EOH
+    notifies :run, "bash[tweak-installation]", :immediately
+  end
+else 
+  bash "install-mediaflux" do 
+    only_if { ! File.exists?("#{mflux_home}/PACKAGE.MF") }
+    code <<-EOH
 java -jar #{installers}/#{installer} nogui << EOF
 accept
 #{mflux_home}
 EOF
 EOH
-  notifies :run, "bash[tweak-installation]", :immediately
+    notifies :run, "bash[tweak-installation]", :immediately
+  end
 end
 
 # Two files need to be replaced if and only if the installer just 

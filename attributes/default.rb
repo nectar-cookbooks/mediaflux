@@ -71,7 +71,8 @@ node.default['mediaflux']['backup_wrapper'] = 'tar_gz_wrapper'
 # template variable.
 node.default['mediaflux']['stores'] = []
 
-node.default['mediaflux']['force_install'] = false
+# This says to reinstall (e.g. upgrade) the Mediaflux installation.
+node.default['mediaflux']['reinstall'] = false
 
 # This workaround comes from CHEF-4234.  It forces the "java" recipe attributes
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
