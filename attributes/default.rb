@@ -71,7 +71,8 @@ node.default['mediaflux']['backup_wrapper'] = 'tar_gz_wrapper'
 # template variable.
 node.default['mediaflux']['stores'] = []
 
+node.default['mediaflux']['force_install'] = false
+
 # This workaround comes from CHEF-4234.  It forces the "java" recipe attributes
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
 node.from_file(run_context.resolve_attribute(*parse_attribute_file_spec("java")))
-

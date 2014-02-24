@@ -36,6 +36,7 @@ mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
 mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
+force_install = node['mediaflux']['force_install']
 
 url = node['mediaflux']['installer_url']
 
@@ -109,7 +110,7 @@ if ! File.exists?("#{mflux_home}/PACKAGE.MF") &&
 end
 
 bash "install-mediaflux" do 
-  not_if { File.exists?("#{mflux_home}/PACKAGE.MF") }
+  only_if { ! File.exists?("#{mflux_home}/PACKAGE.MF") || force_install }
   code <<-EOH
 java -jar #{installers}/#{installer} nogui << EOF
 accept
