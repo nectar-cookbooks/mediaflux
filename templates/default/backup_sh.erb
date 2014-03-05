@@ -51,13 +51,15 @@ else
 fi
 
 # Step #2 delete the directories out of the local backup directory
-rm -rf `cat /tmp/del_dirs`
+echo Deleting local files >>$LOG
+rm -rfv `cat /tmp/del_dirs` >> $LOG 2>&1
 
 # Step #3 delete corresponding objects from the object store
 if [ ! -z "$STORE" ] ; then
+    echo Deleting Object Store objects >>$LOG
     for D in `cat /tmp/del_dirs` ; do
 	PREFIX=`basename $D`
-	swift delete $STORE `swift list $STORE --prefix $PREFIX`
+	swift delete $STORE `swift list $STORE --prefix ${PREFIX}/` >> LOG 2>&1
     done
 fi
 
