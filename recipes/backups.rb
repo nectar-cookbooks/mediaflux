@@ -40,7 +40,15 @@ mflux_stores = Array.new(node['mediaflux']['stores'] || [])
 backup_dir = node['mediaflux']['backup_dir'] || "#{mflux_home}/volatile/backups"
 replica = node['mediaflux']['backup_replica'] || ''
 object_store = node['mediaflux']['backup_store'] || ''
-keep_days = node['mediaflux']['backup_keep_days'] || 5
+keep_days = node['mediaflux']['backup_keep_days']
+keep_sets = node['mediaflux']['backup_keep_sets']
+
+if keep_days && keep_sets then
+  raise "Only one of 'keep_days' and 'keep_sets' can be specified"
+elsif !keep_days && !keep_sets then
+  # Default behaviour ...
+  keep_days = 5
+end
 
 directory backup_dir do
   owner mflux_user
@@ -63,7 +71,8 @@ template "backup.sh" do
                'backup_dir' => backup_dir,
                'replica' => replica,
                'object_store' => object_store,
-               'keep_days' => keep_days
+               'keep_days' => keep_days,
+               'keep_sets' => keep_sets
              })
 end
 

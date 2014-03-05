@@ -13,6 +13,11 @@ LOG="$MFLUX_HOME/volatile/logs/backups.log"
 REPLICA="<%= @replica %>"
 STORE="<%= @object_store %>"
 KEEP_DAYS="<%= @keep_days %>"
+KEEP_SETS="<%= @keep_sets %>"
+
+if [ ! -z "$STORE" ] ; then
+    . /etc/mediaflux/openstackrc
+fi
 
 TIMESTAMP="date -Iseconds"
 
@@ -21,10 +26,40 @@ chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $LOG
 echo "*** Starting mediaflux backup run - " `$TIMESTAMP` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
-find $DIR -type f -ctime +$KEEP_DAYS -exec rm -v {} \; >> $LOG 2>&1
-echo "Cleaning empty backup dirs" >> $LOG
-find $DIR -mindepth 1 -type d -empty -exec rmdir -v {} \; >> $LOG 2>&1
+# First create the lists of directories to be kept and deleted
+if -z "$KEEP_SETS" ; then 
+    # Based on the directory timestamps
+    find $DIR -mindepth 1 -maxdepth 1 -type d -ctime -$KEEP_DAYS \
+    	    | sort > /tmp/keep_dirs 
+    NO_KEEP_DAYS=`expr $KEEP_DAYS - 1`
+    find $DIR -mindepth 1 -maxdepth 1 -type d -ctime +$NO_KEEP_DAYS \
+            | sort > /tmp/del_dirs 
+else
+    # Based on the number of "sets" to keep.
+    find $DIR -mindepth 1 -maxdepth 1 -type d | sort > /tmp/all_dirs
+    HAVE_SETS=`cat /tmp/all_dirs | wc -l`
+    KEEP_SETS=`expr $KEEP_SETS - 1`
+    if [ $HAVE_SETS -gt $KEEP_SETS ] ; then
+	tail --lines=$KEEP_SETS < /tmp/all_dirs > /tmp/keep_dirs
+	head --lines=`expr $HAVE_SETS - $KEEP_SETS` < /tmp/all_dirs \
+                > /tmp/del_dirs
+	rm /tmp/all_dirs
+    else
+	mv /tmp/all_dirs /tmp/keep_dirs
+        cat /dev/null > /tmp/del_dirs
+    fi
+fi
 
+# Step #2 delete the directories out of the local backup directory
+rm -rf `cat /tmp/del_dirs`
+
+# Step #3 delete corresponding objects from the object store
+if [ ! -z "$STORE" ] ; then
+    for D in `cat /tmp/del_dirs` ; do
+	PREFIX=`basename $D`
+	swift delete $STORE `swift list $STORE --prefix $PREFIX`
+    done
+fi
 
 TODAY=`date +%F`
 TODAY_DIR=$DIR/$TODAY
@@ -66,7 +101,6 @@ fi
 
 if [ ! -z "$STORE" ] ; then
     echo "*** Exporting backup to Object Store $STORE - " `$TIMESTAMP` >> $LOG
-    . /etc/mediaflux/openstackrc
     cd $DIR
     swift upload -c $STORE . >> $LOG 2>&1
     RC=$?
