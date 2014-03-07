@@ -27,7 +27,7 @@ echo "*** Starting mediaflux backup run - " `$TIMESTAMP` >> $LOG
 
 echo "Cleaning old backups" >> $LOG
 # First create the lists of directories to be kept and deleted
-if -z "$KEEP_SETS" ; then 
+if [ -z "$KEEP_SETS" ] ; then 
     # Based on the directory timestamps
     find $DIR -mindepth 1 -maxdepth 1 -type d -ctime -$KEEP_DAYS \
     	    | sort > /tmp/keep_dirs 
