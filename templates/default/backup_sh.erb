@@ -32,11 +32,11 @@ find $DIR -mindepth 1 -maxdepth 1 -type d -regextype posix-extended \
 if [ -z "$KEEP_SETS" ] ; then 
     # Based on the age of the sets ... determined by their names
     NOW=`date +%s`
-    CUTOFF=`expr $NOW - 86400`
-    CUTOFF_TIMESTAMP=`date --date=@${CUTOFF} %Y-%m-%d`
-    awk " { if ( \$1 < \"$CUTOFF_TIMESTAMP\" ) print \$1 } " \
+    CUTOFF=`expr $NOW - 86400 \* $KEEP_DAYS`
+    CUTOFF_DIR=$DIR/`date --date=@${CUTOFF} +%Y-%m-%d`
+    awk " { if ( \$1 < \"$CUTOFF_DIR\" ) print \$1 } " \
 	< /tmp/all_dirs > /tmp/del_dirs
-    awk " { if ( \$1 >= \"$CUTOFF_TIMESTAMP\" ) print \$1 } " \
+    awk " { if ( \$1 >= \"$CUTOFF_DIR\" ) print \$1 } " \
 	< /tmp/all_dirs > /tmp/keep_dirs
 else
     # Based on the number of "sets" to keep.
