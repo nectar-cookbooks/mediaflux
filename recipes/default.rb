@@ -71,7 +71,7 @@ end
 user mflux_user do
   comment "MediaFlux service"
   system true
-  shell "/bin/false"
+  shell "/bin/bash"
   home mflux_user_home
 end
 

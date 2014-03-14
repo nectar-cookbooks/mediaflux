@@ -83,6 +83,7 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['backup_replica']` - The location for the rsync backup replica.  If unset, there is no rsync replication.
 * `node['mediaflux']['object_store']` - The Swift Object Store storename for saving backups.  See below for details.  If unset, backups are not saved to Swift.
 * `node['mediaflux']['backup_keep_days']` - Keep backups for this many days. 
+* `node['mediaflux']['backup_keep_sets']` - Keep this number of backups sets. 
 * `node['mediaflux']['backup_cron']` - If true, a cron job is created to run the backups.  Defaults to false.
 * `node['mediaflux']['backup_cron_mailto']` - Mail account for backup cron email.
 * `node['mediaflux']['backup_cron_times']` - The backup cron schedule.  Defaults to `[ "0", "2", "*", "*", "*" ]`.
@@ -249,7 +250,7 @@ Backups
 This recipe creates a simple backup script that can be used to backup the
 Mediaflux database and the assets in the respective stores.  The script is 
 designed for performing a full backups (at most) once a day, keeping 
-backup sets for a fixed number of days:
+backup sets for either N days, or keeping the N most recent sets.
 
 * The actual backups are performed by running a Mediaflux TCL script that write the files to the primary backup location.
 * Backups are optionally "replicated" to another location using `rsync`.
