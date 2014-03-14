@@ -62,7 +62,7 @@ if [ ! -z "$STORE" ] ; then
     echo Deleting Object Store objects >>$LOG
     for D in `cat /tmp/del_dirs` ; do
 	PREFIX=`basename $D`
-	swift delete $STORE `swift list $STORE --prefix ${PREFIX}/` >> LOG 2>&1
+	swift delete $STORE `swift list $STORE --prefix ${PREFIX}/` >> $LOG 2>&1
     done
 fi
 
