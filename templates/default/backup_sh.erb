@@ -53,8 +53,6 @@ else
     fi
 fi
 
-exit 1
-
 # Step #2 delete the directories out of the local backup directory
 echo Deleting local files >>$LOG
 rm -rfv `cat /tmp/del_dirs` >> $LOG 2>&1
