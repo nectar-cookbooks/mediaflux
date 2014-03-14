@@ -19,7 +19,7 @@ if [ ! -z "$STORE" ] ; then
     . /etc/mediaflux/openstackrc
 fi
 
-TIMESTAMP="date -Iseconds"
+TIMESTAMP="date +%Y-%m-%d"
 
 echo >> $LOG
 chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $LOG
@@ -33,10 +33,10 @@ if [ -z "$KEEP_SETS" ] ; then
     # Based on the age of the sets ... determined by their names
     NOW=`date +%s`
     CUTOFF=`expr $NOW - 86400`
-    CUTOFF_TIMESTAMP=`date --date=@${CUTOFF} -Iseconds`
-    awk " { if ( \$1 < $CUTOFF_TIMESTAMP ) print $1 } " \
+    CUTOFF_TIMESTAMP=`date --date=@${CUTOFF} %Y-%m-%d`
+    awk " { if ( \$1 < \"$CUTOFF_TIMESTAMP\" ) print \$1 } " \
 	< /tmp/all_dirs > /tmp/del_dirs
-    awk " { if ( \$1 >= $CUTOFF_TIMESTAMP ) print $1 } " \
+    awk " { if ( \$1 >= \"$CUTOFF_TIMESTAMP\" ) print \$1 } " \
 	< /tmp/all_dirs > /tmp/keep_dirs
 else
     # Based on the number of "sets" to keep.
