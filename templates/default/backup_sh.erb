@@ -19,7 +19,7 @@ if [ ! -z "$STORE" ] ; then
     . /etc/mediaflux/openstackrc
 fi
 
-TIMESTAMP="date +%Y-%m-%d"
+TIMESTAMP="date -Iseconds"
 
 echo >> $LOG
 chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $LOG
@@ -79,10 +79,15 @@ fi
 echo "*** Running mediaflux backups for $TODAY - " `$TIMESTAMP` >> $LOG
 MF_COMMAND="$MFLUX_BIN/mfcommand"
 $MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD" >> $LOG 2>&1
-$MF_COMMAND source -dir=$TODAY_DIR $MFLUX_HOME/config/backup.tcl >> $LOG 2>&1
 RC=$?
-$MF_COMMAND logoff >> $LOG 2>&1
-
+if [ $RC -ne 0 ] ; then
+    echo "*** Mediaflux login failed ..." >> $LOG 2>&1
+else
+    $MF_COMMAND source -dir=$TODAY_DIR $MFLUX_HOME/config/backup.tcl \
+	    >> $LOG 2>&1
+    RC=$?
+    $MF_COMMAND logoff >> $LOG 2>&1
+fi
 if [ $RC -eq 0 ] ; then
     echo "*** Backup for $TODAY completed - " `$TIMESTAMP` >> $LOG
 else
