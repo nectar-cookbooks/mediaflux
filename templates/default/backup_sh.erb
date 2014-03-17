@@ -9,6 +9,7 @@ if [ -e /etc/mediaflux/servicerc ] ; then
 fi
 
 DIR="<%= @backup_dir %>"
+TMP_PREFIX="/tmp/mflux-backup-$$-"
 LOG="$MFLUX_HOME/volatile/logs/backups.log"
 REPLICA="<%= @replica %>"
 STORE="<%= @object_store %>"
@@ -25,42 +26,44 @@ echo >> $LOG
 chown $MFLUX_SYSTEM_USER:$MFLUX_SYSTEM_USER $LOG
 echo "*** Starting mediaflux backup run - " `$TIMESTAMP` >> $LOG
 
+rm -f "${TMP_PREFIX}*" > /dev/null 2>&1
+
 echo "Cleaning old backups" >> $LOG
 # First create the lists of directories to be kept and deleted
 find $DIR -mindepth 1 -maxdepth 1 -type d -regextype posix-extended \
-        -regex '.*/[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort > /tmp/all_dirs 
+        -regex '.*/[0-9]{4}-[0-9]{2}-[0-9]{2}' | sort > ${TMP_PREFIX}all_dirs 
 if [ -z "$KEEP_SETS" ] ; then 
     # Based on the age of the sets ... determined by their names
     NOW=`date +%s`
     CUTOFF=`expr $NOW - 86400 \* $KEEP_DAYS`
     CUTOFF_DIR=$DIR/`date --date=@${CUTOFF} +%Y-%m-%d`
     awk " { if ( \$1 < \"$CUTOFF_DIR\" ) print \$1 } " \
-	< /tmp/all_dirs > /tmp/del_dirs
+	< ${TMP_PREFIX}all_dirs > ${TMP_PREFIX}del_dirs
     awk " { if ( \$1 >= \"$CUTOFF_DIR\" ) print \$1 } " \
-	< /tmp/all_dirs > /tmp/keep_dirs
+	< ${TMP_PREFIX}all_dirs > ${TMP_PREFIX}keep_dirs
 else
     # Based on the number of "sets" to keep.
-    HAVE_SETS=`cat /tmp/all_dirs | wc -l`
+    HAVE_SETS=`cat ${TMP_PREFIX}all_dirs | wc -l`
     KEEP_SETS=`expr $KEEP_SETS - 1`
     if [ $HAVE_SETS -gt $KEEP_SETS ] ; then
-	tail --lines=$KEEP_SETS < /tmp/all_dirs > /tmp/keep_dirs
-	head --lines=`expr $HAVE_SETS - $KEEP_SETS` < /tmp/all_dirs \
-                > /tmp/del_dirs
-	rm /tmp/all_dirs
+	tail --lines=$KEEP_SETS < ${TMP_PREFIX}all_dirs > ${TMP_PREFIX}keep_dirs
+	head --lines=`expr $HAVE_SETS - $KEEP_SETS` < ${TMP_PREFIX}all_dirs \
+                > ${TMP_PREFIX}del_dirs
+	rm ${TMP_PREFIX}all_dirs
     else
-	mv /tmp/all_dirs /tmp/keep_dirs
-        cat /dev/null > /tmp/del_dirs
+	mv ${TMP_PREFIX}all_dirs ${TMP_PREFIX}keep_dirs
+        cat /dev/null > ${TMP_PREFIX}del_dirs
     fi
 fi
 
 # Step #2 delete the directories out of the local backup directory
 echo Deleting local files >>$LOG
-rm -rfv `cat /tmp/del_dirs` >> $LOG 2>&1
+rm -rfv `cat ${TMP_PREFIX}del_dirs` >> $LOG 2>&1
 
 # Step #3 delete corresponding objects from the object store
 if [ ! -z "$STORE" ] ; then
     echo Deleting Object Store objects >>$LOG
-    for D in `cat /tmp/del_dirs` ; do
+    for D in `cat ${TMP_PREFIX}del_dirs` ; do
 	PREFIX=`basename $D`
 	swift delete $STORE `swift list $STORE --prefix ${PREFIX}/` >> $LOG 2>&1
     done
@@ -120,6 +123,10 @@ if [ ! -z "$STORE" ] ; then
     else
 	echo "*** Backup save to Swift completed - " `$TIMESTAMP` >> $LOG
     fi 
+fi
+
+if [ $RC -eq 0 ] ; then
+    rm -f "${TMP_PREFIX}*" > /dev/null 2>&1
 fi
 
 exit $RC
