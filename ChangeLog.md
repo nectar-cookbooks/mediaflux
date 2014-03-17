@@ -1,6 +1,11 @@
 Change Log for the Mediaflux cookbook
 =====================================
 
+Version 0.9.8
+-------------
+ - Fix regression with timestamps in logfile (#23)
+ - Fix sloppy temp-file handling (#24)
+
 Version 0.9.7
 -------------
  - Implement removal of old Swift backup objects (#12)
