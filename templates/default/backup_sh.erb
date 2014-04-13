@@ -126,7 +126,7 @@ if [ ! -z "$STORE" ] ; then
 fi
 
 if [ $RC -eq 0 ] ; then
-    rm -f "${TMP_PREFIX}*" > /dev/null 2>&1
+    rm -f "${TMP_PREFIX}"* > /dev/null 2>&1
 fi
 
 exit $RC
