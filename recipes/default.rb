@@ -30,7 +30,7 @@
 include_recipe "mediaflux::common"
 include_recipe "mediaflux::logwatch"
 
-mflux_home = node['mediaflux']['home']
+
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
@@ -82,14 +82,7 @@ directory "mflux user home directory" do
   mode 0755
 end
 
-directory installers do
-  owner mflux_user
-  mode 0750
-end
-
-bash "chown installers" do
-  code "chown -R #{mflux_user} #{installers}"
-end
+include_recipe 'mediaflux::installers_cache'
 
 if url == nil
   if ! ::File.exists?("#{installers}/#{installer}")
