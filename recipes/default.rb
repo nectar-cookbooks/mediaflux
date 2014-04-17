@@ -30,7 +30,7 @@
 include_recipe "mediaflux::common"
 include_recipe "mediaflux::logwatch"
 
-
+mflux_home = node['mediaflux']['home']
 mflux_bin = node['mediaflux']['bin'] || "#{mflux_home}/bin"
 mflux_config = "#{mflux_home}/config"
 mflux_user = node['mediaflux']['user']
