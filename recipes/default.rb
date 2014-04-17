@@ -75,7 +75,8 @@ user mflux_user do
   home mflux_user_home
 end
 
-directory mflux_user_home do
+directory "mflux user home directory" do
+  path mflux_user_home
   owner mflux_user
   group mflux_user
   mode 0755

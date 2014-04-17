@@ -56,7 +56,8 @@ end
 # General JVM opts to be used by mediaflux clients.
 java_opts = node['mediaflux']['client_jvm_opts'] || ''
 
-directory mflux_home do
+directory "mflux installation directory" do
+  path mflux_home
   owner 'root'
   mode 0755
 end
