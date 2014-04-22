@@ -78,7 +78,7 @@ end
 
 external_asset_backup = node['mediaflux']['external_asset_backup']
 backup_wrapper = node['mediaflux']['backup_wrapper']
-if ! backup_wrapper =~ /^\/.+/ then
+if not backup_wrapper =~ /^\/.+/ then
   backup_wrapper = "#{mflux_bin}/#{backup_wrapper}"
 end
 
