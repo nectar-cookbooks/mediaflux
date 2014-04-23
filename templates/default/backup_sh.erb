@@ -96,6 +96,9 @@ if [ $RC -eq 0 ] ; then
 else
     echo "*** Backup for $TODAY failed - " `$TIMESTAMP` >> $LOG
     echo "Mediaflux backup for $TODAY failed; see log file"
+    # This removes an empty failed backup directory so that it
+    # does not count for the purposes of backup cycling.
+    rmdir $TODAY_DIR >> $LOG 2>&1
     exit $RC
 fi
 

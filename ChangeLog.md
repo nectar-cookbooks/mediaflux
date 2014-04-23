@@ -1,6 +1,10 @@
 Change Log for the Mediaflux cookbook
 =====================================
 
+Version 0.9.10
+-------------
+ - Fix bug in cycling backups after a failure (#26)
+
 Version 0.9.9
 -------------
  - Fix some annoying WARNINGs
