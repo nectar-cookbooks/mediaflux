@@ -1,6 +1,12 @@
 Change Log for the Mediaflux cookbook
 =====================================
 
+Version 0.9.9
+-------------
+ - Fix some annoying WARNINGs
+ - Fix more tempfile stuff
+ - Fix latent bug in handling of backup wrappers
+
 Version 0.9.8
 -------------
  - Fix regression with timestamps in logfile (#23)
