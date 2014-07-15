@@ -1,5 +1,8 @@
 Change Log for the Mediaflux cookbook
 =====================================
+Version 0.9.11
+--------------
+ - Tracking change in 'setup' cookbook
 
 Version 0.9.10
 -------------
