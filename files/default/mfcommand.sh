@@ -1,15 +1,6 @@
 #!/bin/sh
 # file name mfcommand
 
-if [ -r /etc/mediaflux/mfluxrc ] ; then
-    . /etc/mediaflux/mfluxrc
-fi
-
-if [ -r $HOME/.mfluxrc ] ; then
-    . $HOME/.mfluxrc
-fi
-
-
 # We use the hostname to qualify the location of the SID file
 # Since a SID is only valid for a given host.
 
@@ -273,7 +264,20 @@ status() {
     RETVAL=1
 }
 
-# Options:
+if [ $1 == "--norc" ] ; then
+    shift
+else
+    if [ -r /etc/mediaflux/mfluxrc ] ; then
+	. /etc/mediaflux/mfluxrc
+    fi
+    
+    if [ -r $HOME/.mfluxrc ] ; then
+	. $HOME/.mfluxrc
+    fi
+fi
+
+
+# Subcommands:
 #
 case "$1" in 
   logon) 
@@ -297,7 +301,7 @@ case "$1" in
     ;;
 
   --help)
-    echo $"Usage: $0 {logon|logoff|status|import|help|<mediaflux service>}"
+    echo $"Usage: $0 [--norc] {logon|logoff|status|import|help|<mediaflux service>}"
     RETVAL=1
     ;;
 
