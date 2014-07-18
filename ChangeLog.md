@@ -1,5 +1,9 @@
 Change Log for the Mediaflux cookbook
 =====================================
+Version 0.9.12
+--------------
+ - Added "--norc" option to the "mfcommand" script
+
 Version 0.9.11
 --------------
  - Tracking change in 'setup' cookbook

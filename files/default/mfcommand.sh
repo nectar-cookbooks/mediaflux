@@ -267,6 +267,9 @@ status() {
 if [ $1 == "--norc" ] ; then
     shift
 else
+    # Note that though we may load a domain / user / password, these
+    # will not be used for authentication.  Instead we use the parameters
+    # supplied in the 'login' subcommand to authenticate the "session". 
     if [ -r /etc/mediaflux/mfluxrc ] ; then
 	. /etc/mediaflux/mfluxrc
     fi
@@ -301,7 +304,12 @@ case "$1" in
     ;;
 
   --help)
-    echo $"Usage: $0 [--norc] {logon|logoff|status|import|help|<mediaflux service>}"
+    echo "Usage: $0 [--norc] {logon|logoff|status|import|help|<mediaflux service>}"
+    echo "This version of mfcommand differs from the standard one in "
+    echo "that it will load settings from '/etc/mediaflux/mfluxrc' and "
+    echo "'~/mfluxrc' if those files are readable."
+    echo "The '--norc' option suppresses the loading of the mfluxrc files."
+    echo "The subcommands are as described by the Mediaflux documentation."
     RETVAL=1
     ;;
 
