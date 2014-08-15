@@ -38,11 +38,11 @@ if ! installers.start_with?('/') then
 end
 
 directory installers do
-  owner mflux_user
+  owner 'root'
   mode 0750
 end
 
 bash "chown installers" do
-  code "chown -R #{mflux_user} #{installers}"
+  code "chown -R root #{installers}"
 end
 
