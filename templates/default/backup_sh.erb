@@ -90,15 +90,18 @@ mf() {
 	RC=$?	
 	$MF_COMMAND logoff >> $LOG 2>&1
     fi
+    return $RC
 }
 
 echo "*** Running mediaflux backups for $TODAY - " `$TIMESTAMP` >> $LOG
 
 mf server.database.backup :url file:///$TODAY_DIR/database
+RC=$?
 LOCKED=1
 if [ $RC -eq 0 ] ; then
     mf server.database.lock :action abort \
         :msg "The Mediaflux database and stores are being backed up"
+    RC=$?    
     if [ $RC -eq 0 ] ; then
 	LOCKED=1
     fi
@@ -111,14 +114,19 @@ RRC=$RC
 mf asset.archive.create :url file:///$TODAY_DIR/<%= store %>.aar \
     :where content store '<%= store %>'
   <% end %>
+RC=$?
 if [ $RCC -ne 0 ] ; then
-    RC = $RRC
+    RC=$RRC
 fi
 <% end %>
 
 if [ $LOCKED -eq 1 ] ; then
+    RCC=$RC
     mf server.database.unlock
-fi
+    RC=$?
+    if [ $RCC -ne 0 ] ; then
+	RC=$RRC
+    fi
 if [ $RC -eq 0 ] ; then
     echo "*** Backup for $TODAY completed - " `$TIMESTAMP` >> $LOG
 else
