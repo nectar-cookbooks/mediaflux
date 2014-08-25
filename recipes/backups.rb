@@ -85,18 +85,16 @@ template "backup.sh" do
              })
 end
 
-if false then
-  template "backup.tcl" do
-    path "#{mflux_config}/backup.tcl"
-    source 'backup_tcl.erb'
-    owner mflux_user
-    mode 0600
-    variables ({
-                 'stores' => mflux_stores,
-                 'external_asset_backup' => external_asset_backup,
-                 'backup_wrapper' => backup_wrapper
-               })
-  end
+template "backup.tcl" do
+  path "#{mflux_config}/backup.tcl"
+  source 'backup_tcl.erb'
+  owner mflux_user
+  mode 0600
+  variables ({
+               'stores' => mflux_stores,
+               'external_asset_backup' => external_asset_backup,
+               'backup_wrapper' => backup_wrapper
+             })
 end
 
 wrappers = ['tar_gz_wrapper']
