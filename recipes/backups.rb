@@ -62,6 +62,12 @@ if object_store != '' then
   include_recipe 'setup::openstack_clients'
 end
 
+external_asset_backup = node['mediaflux']['external_asset_backup']
+backup_wrapper = node['mediaflux']['backup_wrapper']
+if not backup_wrapper =~ /^\/.+/ then
+  backup_wrapper = "#{mflux_bin}/#{backup_wrapper}"
+end
+
 template "backup.sh" do
   path "#{mflux_home}/bin/backup.sh"
   source 'backup_sh.erb'
@@ -72,26 +78,25 @@ template "backup.sh" do
                'replica' => replica,
                'object_store' => object_store,
                'keep_days' => keep_days,
-               'keep_sets' => keep_sets
-             })
-end
-
-external_asset_backup = node['mediaflux']['external_asset_backup']
-backup_wrapper = node['mediaflux']['backup_wrapper']
-if not backup_wrapper =~ /^\/.+/ then
-  backup_wrapper = "#{mflux_bin}/#{backup_wrapper}"
-end
-
-template "backup.tcl" do
-  path "#{mflux_config}/backup.tcl"
-  source 'backup_tcl.erb'
-  owner mflux_user
-  mode 0600
-  variables ({
+               'keep_sets' => keep_sets,
                'stores' => mflux_stores,
                'external_asset_backup' => external_asset_backup,
                'backup_wrapper' => backup_wrapper
              })
+end
+
+if false then
+  template "backup.tcl" do
+    path "#{mflux_config}/backup.tcl"
+    source 'backup_tcl.erb'
+    owner mflux_user
+    mode 0600
+    variables ({
+                 'stores' => mflux_stores,
+                 'external_asset_backup' => external_asset_backup,
+                 'backup_wrapper' => backup_wrapper
+               })
+  end
 end
 
 wrappers = ['tar_gz_wrapper']
