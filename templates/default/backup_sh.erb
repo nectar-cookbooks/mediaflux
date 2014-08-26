@@ -82,15 +82,15 @@ fi
 mf() {
     MF_COMMAND="$MFLUX_BIN/mfcommand"
     $MF_COMMAND logon $MFLUX_DOMAIN $MFLUX_USER "$MFLUX_PASSWORD" >> $LOG 2>&1
-    RC=$?
-    if [ $RC -ne 0 ] ; then
+    MRC=$?
+    if [ $MRC -ne 0 ] ; then
 	echo "*** Mediaflux login failed ..." >> $LOG 2>&1
     else
 	$MF_COMMAND "$@" >> $LOG 2>&1
-	RC=$?	
+	MRC=$?	
 	$MF_COMMAND logoff >> $LOG 2>&1
     fi
-    return $RC
+    return $MRC
 }
 
 echo "*** Running mediaflux backups for $TODAY - " `$TIMESTAMP` >> $LOG
