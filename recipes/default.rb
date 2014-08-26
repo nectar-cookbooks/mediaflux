@@ -55,12 +55,29 @@ installer = node['mediaflux']['installer']
 # Do we need an SSL cert file?
 need_certs = node['mediaflux']['https_port'] != ''
 
-# Recover the admin password (if any) from the current installation to
-# avoid clobbering it.
-if File::exists?('/etc/mediaflux/servicerc') then
-  admin_password = `. /etc/mediaflux/servicerc && echo $MFLUX_PASSWORD`.strip()
-else
+
+if ! ::File.exists?("#{mflux_home}/volatile/database/MFLUXDB.db") then
+  # We are starting from a clean sheet, and Mediaflux will start
+  # with the default password
   admin_password = 'change_me'
+  target_password = node['mediaflux']['initial_password'] || 'change_me'
+else
+  # Recover the admin password from the current installation to
+  # avoid clobbering it.
+  if File::exists?('/etc/mediaflux/servicerc')
+    admin_password = 
+      `. /etc/mediaflux/servicerc && echo $MFLUX_PASSWORD`.strip()
+  else
+    admin_password = node['mediaflux']['initial_password'] || 'change_me'
+    Chef::Log.warn("There is a Mediaflux database, but no 'servicerc' file. " +
+                   "As we cannot be sure of the current admin password, " +
+                   "we are >>assuming<< that it is the initial password " +
+                   "'#{admin_password}'.  If this assumption is incorrect, " +
+                   "the recipe will fail in the 'run-server-config' step. " +
+                   "You can fix that by editing the 'servicerc' file to " +
+                   "set the real password.")
+  end
+  target_password = admin_password
 end
 
 # This is required to run 'aterm' on a headless machine / virtual
@@ -332,4 +349,10 @@ bash "mediaflux-running-B" do
     "    --secure-protocol=SSLv3 --waitretry=1 --timeout=2 --tries=30"
 end
 
+bash "set admin password" do
+  code "#{mflux_bin}/change-mf-password.sh #{target_password}"
+  only_if { admin_password != target_password }
+end
+
 include_recipe 'mediaflux::backups'
+
