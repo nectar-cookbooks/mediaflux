@@ -4,6 +4,7 @@ Version 0.9.13
 --------------
  - Fix for session timeouts during backups (#27)
  - Fix for database locks left after failed backups (#28)
+ - Installer cache now owned by root
 
 Version 0.9.12
 --------------
