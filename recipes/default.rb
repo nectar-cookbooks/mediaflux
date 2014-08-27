@@ -55,7 +55,7 @@ base_url = node['mediaflux']['download_base_url']
 version = node['mediaflux']['version']
 
 if url then
-  m = /.+\/([^\/]+\.jar)$/.matches(url)
+  m = /.+\/([^\/]+\.jar)$/.match(url)
   unless m then
     raise "Installer URL (#{url}) isn't for a JAR file"
   end
@@ -67,7 +67,7 @@ if url then
 end
 
 if installer then
-  m = /.+_(\d\.\d\.\d\d\d)_jvm_(\d\.\d)\.jar$/.matches(installer)
+  m = /.+_(\d\.\d\.\d\d\d)_jvm_(\d\.\d)\.jar$/.match(installer)
   unless m then
     raise "Cannot parse the installer name"
   end
