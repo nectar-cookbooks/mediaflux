@@ -1,5 +1,10 @@
 Change Log for the Mediaflux cookbook
 =====================================
+Version 0.9.13
+--------------
+ - Fix for session timeouts during backups (#27)
+ - Fix for database locks left after failed backups (#28)
+
 Version 0.9.12
 --------------
  - Added "--norc" option to the "mfcommand" script
