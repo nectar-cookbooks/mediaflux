@@ -67,7 +67,7 @@ if url then
 end
 
 if installer then
-  m = /.+_(\d\.\d\.\d\d\d)_jvm_(\d\.\d)\.jar)$/.matches(installer)
+  m = /.+_(\d\.\d\.\d\d\d)_jvm_(\d\.\d)\.jar$/.matches(installer)
   unless m then
     raise "Cannot parse the installer name"
   end
