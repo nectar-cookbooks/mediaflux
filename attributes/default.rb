@@ -6,12 +6,12 @@ node.default['mediaflux']['volatile'] = nil        # separate data directory
 
 node.default['mediaflux']['installers'] = 'installers'
 
-node.default['mediaflux']['installer'] = 'mflux-dev_3.8.038_jvm_1.6.jar' 
-
-# This should be overridden in the node or role definitions.  If it is
-# nil then the recipe assumes that the installer has already been
-# downloaded and placed in the installation directory as "installer.jar"
+# The following attributes control what version of Mediaflux to use, what
+# installer to use, and where to get it from (if it needs to be downloaded).
 node.default['mediaflux']['installer_url'] = nil
+node.default['mediaflux']['download_base_url'] = nil
+node.default['mediaflux']['version'] = nil
+node.default['mediaflux']['installer'] = nil
 
 node.default['mediaflux']['host'] = nil           # defaults to "this host"
 

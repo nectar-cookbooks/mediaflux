@@ -39,8 +39,6 @@ mflux_user_home = node['mediaflux']['user_home'] || mflux_home
 mflux_fs = node['mediaflux']['volatile']
 reinstall = node['mediaflux']['reinstall']
 
-url = node['mediaflux']['installer_url']
-
 domain = node['mediaflux']['authentication_domain'] || 'users'
 
 mfcommand = "#{mflux_bin}/mfcommand"
@@ -50,7 +48,53 @@ installers = node['mediaflux']['installers'] || 'installers'
 if ! installers.start_with?('/') then
   installers = mflux_user_home + '/' + installers
 end
+
+url = node['mediaflux']['installer_url']
 installer = node['mediaflux']['installer']
+base_url = node['mediaflux']['download_base_url']
+version = node['mediaflux']['version']
+
+if url then
+  m = /.+\/([^\/]+\.jar)$/.matches(url)
+  unless m then
+    raise "Installer URL (#{url}) isn't for a JAR file"
+  end
+  if installer && m[1] != installer then
+    raise "Installer JAR file (#{installer}) doesn't match URL (#{url})"
+  else
+    installer = m[1]
+  end
+end
+
+if installer then
+  m = /.+_(\d\.\d\.\d\d\d)_jvm_(\d\.\d)\.jar)$/.matches(installer)
+  unless m then
+    raise "Cannot parse the installer name"
+  end
+  if !version then
+    version = m[1]
+  elsif version != m[1] then
+    raise "We need Mediaflux #{version} but the supplied 'installer' " +
+      "or 'installer_url' is for #{m[1]}"
+  end
+elsif version then 
+  installer = "mflux-dev_#{version}_jvm_1.6.jar"
+else
+  raise "Nothing specifies a Mediaflux version.  You need to specify it " +
+    "directly via the 'version' attribute, or indirectly in the 'installer' " +
+    "or 'unstaller_url'"
+end
+
+if base_url && !url then
+  url = "#{base_url}/#{version}/#{installer}"
+end
+  
+if !url && !::File.exists?("#{installers}/#{installer}")
+    raise "Mediaflux installer #{installer} needs to be downloaded by hand" +
+      "and placed in #{installers}"
+end
+
+raise "Bailing out: '#{url}', '#{installer}', '#{version}'"
 
 # Do we need an SSL cert file?
 need_certs = node['mediaflux']['https_port'] != ''
@@ -83,15 +127,10 @@ directory "mflux user home directory" do
   mode 0755
 end
 
-if url == nil
-  if ! ::File.exists?("#{installers}/#{installer}")
-    raise 'You must either download the Mediaflux installer by hand' + 
-        ' or set the mediaflux.installer_url attribute'
-  end
-else
+if url then
   remote_file "#{installers}/#{installer}" do
     action :create_if_missing
-    source "#{url}/#{installer}"
+    source url
   end
 end
 
