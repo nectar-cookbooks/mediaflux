@@ -155,9 +155,20 @@ EOF
 EOH
     notifies :run, "bash[tweak-installation]", :immediately
   end
-else 
+elsif File.exists?("#{mflux_home}/PACKAGE.MF") then
+  contents = File.read("#{mflux_home}/PACKAGE.MF")
+  m = /^Version:\s*(.+)$/.match(contents)
+  raise "No 'Version:' line in #{mflux_home}/PACKAGE.MF file" unless m
+  if version != m[1] then
+    log 'version warning' do
+      level :warn
+      message "Currently installed Mediaflux version (#{m[1]}) does not " +
+        "match the requested version (#{version}).  Set the 'reinstall' " +
+        "attribute to true to force a reinstall."
+    end
+  end
+else
   bash "install-mediaflux" do 
-    only_if { ! File.exists?("#{mflux_home}/PACKAGE.MF") }
     code <<-EOH
 java -jar #{installers}/#{installer} nogui << EOF
 accept
