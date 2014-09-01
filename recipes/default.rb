@@ -132,18 +132,42 @@ if url then
   end
 end
 
-if ! File.exists?("#{mflux_home}/PACKAGE.MF") then
+current = nil
+if File.exists?("#{mflux_home}/PACKAGE.MF") then
+  contents = File.read("#{mflux_home}/PACKAGE.MF")
+  m = /^Version:\s*(.+)$/.match(contents)
+  raise "No 'Version:' line in #{mflux_home}/PACKAGE.MF file" unless m
+  current = m[1]
+end
+
+if current && version != current then
+  log 'version warning' do
+    level :warn
+    message "\n" +
+      "***************************************************************\n" +
+      "The currently installed Mediaflux version (#{current}) does not \n" +
+      "match the requested version (#{version}).  Set the 'reinstall' \n" +
+      "attribute to true to force a reinstall.\n" +
+      "***************************************************************\n"
+  end
+end
+
+do_install = reinstall || !current
+
+raise "do_install is #{do_install}"
+
+if do_install then 
   if node['mediaflux']['accept_license_agreement'] != true then
     raise 'You must either run the Mediaflux installer by hand' + 
       ' or set the mediaflux.accept_license_agreement attribute to true' +
       ' to signify that you have read and accept the Mediaflux license'
   end
-end
 
-if reinstall then
-  service 'mediaflux-stop-to-reinstall' do
-    service_name 'mediaflux'
-    action :stop
+  if reinstall then
+    service 'mediaflux-stop-to-reinstall' do
+      service_name 'mediaflux'
+      action :stop
+    end
   end
   bash "install-mediaflux" do 
     code <<-EOH
@@ -151,31 +175,6 @@ java -jar #{installers}/#{installer} nogui << EOF
 accept
 #{mflux_home}
 y
-EOF
-EOH
-    notifies :run, "bash[tweak-installation]", :immediately
-  end
-elsif File.exists?("#{mflux_home}/PACKAGE.MF") then
-  contents = File.read("#{mflux_home}/PACKAGE.MF")
-  m = /^Version:\s*(.+)$/.match(contents)
-  raise "No 'Version:' line in #{mflux_home}/PACKAGE.MF file" unless m
-  if version != m[1] then
-    log 'version warning' do
-      level :warn
-      message "\n" +
-        "***************************************************************\n" +
-        "The currently installed Mediaflux version (#{m[1]}) does not \n" +
-        "match the requested version (#{version}).  Set the 'reinstall' \n" +
-        "attribute to true to force a reinstall.\n" +
-        "***************************************************************\n"
-    end
-  end
-else
-  bash "install-mediaflux" do 
-    code <<-EOH
-java -jar #{installers}/#{installer} nogui << EOF
-accept
-#{mflux_home}
 EOF
 EOH
     notifies :run, "bash[tweak-installation]", :immediately
