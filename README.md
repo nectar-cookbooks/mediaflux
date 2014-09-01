@@ -116,15 +116,26 @@ downloading the installer:
 
  1. You can download the installer by hand, and place it in the designated
     local installer cache directory; e.g. "/opt/mediaflux_installers".  If 
-    you do this, you need to set 'installer' to the
-    filename (not pathname!) of the installer.
+    you do this, you need to set either 'installer' or 'version' to correspond
+    to the installer you want to use.
 
 The recipes will try only one option to getting the installer, depending 
 on what attributes are set, but they are considered in the order above.  If
 extra attributes are set, the recipe will do some consistency checks.
 
-Please note that the recipe requires the filename of the original installer 
-to be preserved for correct operation.
+Please note:
+ 
+ * The recipe requires the filename of the original installer to be preserved 
+   for correct operation.
+
+ * If you are using DaRIS, you need to select a version of Mediaflux that
+   satisfied the requirements of your DaRIS version.  This is not currently
+   checked.
+
+ * At this point in time, the recipe will not automatically upgrade the 
+   Mediaflux install.  To force an upgrade (actually, re-install into the
+   existing "/opt/mflux" tree), you need to set 'reinstall' to true.  
+   **Make sure that your backups are up to date first!**
 
 Java installation details
 =========================
