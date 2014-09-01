@@ -6,13 +6,14 @@ Mediaflux instance.  The prerequisites are the installer
 for Mediaflux, and a current license key file for Mediaflux.  You are also
 required to accept the Mediaflux license.
 
-* The download URL for the Mediaflux installer and a Mediaflux license 
-  key should be obtained from Architecta (or from SGI who distribute it 
-  as "LiveArc").  
+* The Mediaflux installer and a Mediaflux license key should be obtained 
+  from Architecta (or from SGI who distribute it as "LiveArc").  See below
+  for details.
   * The installer can be downloaded by hand and placed in the "installers"
-    directory.  Alternatively, you can set the `mediaflux.installer` and
-    `mediaflux.installer_url` attributes (see below) to get these recipes 
-    to download the installer.
+    directory, setting its filename in the 'installer' attribute.
+    Alternatively, you can set the 'installer_url' attribute (giving the
+    full URL), or 'download_base_url' and either 'version' or 'installer'.
+    Details are below: see "Specifying the Mediaflux Installer to use".
   * The license file must be placed in the installer directory by hand.
     
 * When you run the Mediaflux installer, you are required to accept the
@@ -61,8 +62,11 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['user_home']` - Specified the Mediaflux system user's home directory. This defaults to the installation directory.
 * `node['mediaflux']['volatile']` - Specifies a data directory for the Mediaflux server.  If this directory exists, the recipe will make the Mediaflux "volatile" directory a symlink to this one, and populate it with the required subdirectories.
 * `node['mediaflux']['installers']` - Specifies a local directory where the recipes will look for downloaded installers and license files.
-* `node['mediaflux']['installer']` - Specifies the (simple) filename for the Mediaflux installer.
-* `node['mediaflux']['installer_url']` - Specifies a URL for downloading the Mediaflux installers.  By default this is unset (nil), and the recipe will assume that you have obtained and placed the installer in the 'installers' directory.
+* `node['mediaflux']['installer']` - Specifies the (simple) filename for the Mediaflux installer.  By default this is unset.
+* `node['mediaflux']['version']` - Specifies the Mediaflux version number; e.g. ".  By default this is unset (nil).
+* `node['mediaflux']['installer']` - Specifies the (simple) filename for the Mediaflux installer.  By default this is unset.
+* `node['mediaflux']['installer_url']` - Specifies the full URL for downloading the specific Mediaflux installer.  By default this is unset (nil).
+* `node['mediaflux']['download_base_url']` - Specifies the base URL for downloading the specific Mediaflux installer.  By default this is unset (nil).
 * `node['mediaflux']['accept_license_agreement']` - Set this to true to signify that you accept the Mediaflux license agreement embedded in the installer.
 * `node['mediaflux']['host']` - The server's hostname.  If unspecified,  this defaults to `'localhost'`.
 * `node['mediaflux']['http_port']` - Specifies the port for the Mediaflux server's http listener.  If unset, the server won't start an http listener.
@@ -91,6 +95,36 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['external_asset_backup']` - This determines whether stores are backed up using Mediaflux `asset.archive.create` or by running an external backup wrapper.  Defaults to true (for now) due to issues with Mediaflux the `asset.archive.*` services.
 * `node['mediaflux']['backup_wrapper']` - This gives the name of the external backup wrapper command.  See below for details. Defaults to "tar_gz_wrapper".
 
+Specifying the Mediaflux Installer to use
+=========================================
+
+As mentioned above, you need to obtain an installer for Mediaflux (together
+with a license file).  Mediaflux installers are available from Mediaflux
+from the Mediaflux download site.  Unfortunately (for us) Mediaflux
+would prefer the site's URL to not be disclosed in this Cookbook.  To cater 
+for this, we have devised a "scheme" in which you have three options for 
+downloading the installer:
+
+ 1. You can specify the full URL of the downloadable in the 'installer'
+    attribute.
+
+ 1. You can specify a base URL for the downloads in the 'download_base_url'
+    and either a 'version' or a 'installer' to select the specific 
+    downloadable.  (Hint: the base URL consists of a hostname and pathname
+    components that do not include version information.  Or look at what
+    the recipes actually do.)
+
+ 1. You can download the installer by hand, and place it in the designated
+    local installer cache directory; e.g. "/opt/mediaflux_installers".  If 
+    you do this, you need to set 'installer' to the
+    filename (not pathname!) of the installer.
+
+The recipes will try only one option to getting the installer, depending 
+on what attributes are set, but they are considered in the order above.  If
+extra attributes are set, the recipe will do some consistency checks.
+
+Please note that the recipe requires the filename of the original installer 
+to be preserved for correct operation.
 
 Java installation details
 =========================

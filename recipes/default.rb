@@ -69,7 +69,7 @@ end
 if installer then
   m = /.+_(\d\.\d\.\d\d\d)_jvm_(\d\.\d)\.jar$/.match(installer)
   unless m then
-    raise "Cannot parse the installer name"
+    raise "Cannot parse the installer JAR file name"
   end
   if !version then
     version = m[1]
@@ -93,8 +93,6 @@ if !url && !::File.exists?("#{installers}/#{installer}")
     raise "Mediaflux installer #{installer} needs to be downloaded by hand" +
       "and placed in #{installers}"
 end
-
-raise "Bailing out: '#{url}', '#{installer}', '#{version}'"
 
 # Do we need an SSL cert file?
 need_certs = node['mediaflux']['https_port'] != ''
