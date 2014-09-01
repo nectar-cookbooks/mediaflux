@@ -154,8 +154,6 @@ end
 
 do_install = reinstall || !current
 
-raise "do_install is #{do_install}"
-
 if do_install then 
   if node['mediaflux']['accept_license_agreement'] != true then
     raise 'You must either run the Mediaflux installer by hand' + 
