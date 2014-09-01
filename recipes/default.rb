@@ -162,9 +162,12 @@ elsif File.exists?("#{mflux_home}/PACKAGE.MF") then
   if version != m[1] then
     log 'version warning' do
       level :warn
-      message "Currently installed Mediaflux version (#{m[1]}) does not " +
-        "match the requested version (#{version}).  Set the 'reinstall' " +
-        "attribute to true to force a reinstall."
+      message "\n" +
+        "***************************************************************\n" +
+        "The currently installed Mediaflux version (#{m[1]}) does not \n" +
+        "match the requested version (#{version}).  Set the 'reinstall' \n" +
+        "attribute to true to force a reinstall.\n" +
+        "***************************************************************\n"
     end
   end
 else
