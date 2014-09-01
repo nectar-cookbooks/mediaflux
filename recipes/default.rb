@@ -135,7 +135,7 @@ end
 current = nil
 if File.exists?("#{mflux_home}/PACKAGE.MF") then
   contents = File.read("#{mflux_home}/PACKAGE.MF")
-  m = /^Version:\s*(.+)$/.match(contents)
+  m = /^Version:\s*([0-9.]+)/.match(contents)
   raise "No 'Version:' line in #{mflux_home}/PACKAGE.MF file" unless m
   current = m[1]
 end
