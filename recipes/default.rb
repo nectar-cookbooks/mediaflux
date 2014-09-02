@@ -27,6 +27,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+require 'chef/version_constraint'
+
 include_recipe "mediaflux::common"
 include_recipe "mediaflux::logwatch"
 include_recipe 'mediaflux::installer_cache'
@@ -140,19 +142,39 @@ if File.exists?("#{mflux_home}/PACKAGE.MF") then
   current = m[1]
 end
 
+reinstall = false
 if current && version != current then
-  log 'version warning' do
-    level :warn
-    message "\n" +
-      "***************************************************************\n" +
-      "The currently installed Mediaflux version (#{current}) does not \n" +
-      "match the requested version (#{version}).  Set the 'reinstall' \n" +
-      "attribute to true to force a reinstall.\n" +
-      "***************************************************************\n"
+  message = 
+    "***************************************************************\n" +
+    "The currently installed Mediaflux version (#{current}) does not \n" +
+    "match the requested version (#{version}).  Set the 'on_mismatch' \n" +
+    "attribute to 'upgrade' or 'force_reinstall' to perform a reinstall.\n" +
+    "A full Mediaflux backup is strongly advised before you do this.\n" +
+    "***************************************************************"
+  case node['mediaflux']['on_mismatch']
+  when 'fail'
+    raise message
+  when 'warn'
+    log 'version warning' do
+      level :warn
+      message "\n" + message
+    end
+  when 'upgrade'
+    if Chef::VersionConstraint.new(">= #{current}").include?(version) then
+      reinstall = true;
+    else
+      raise "Replacing Mediaflux #{current} with #{version} is a downgrade!!"
+    end
+  when 'force_reinstall'
+    reinstall = true
+  else
+    raise "unrecognized 'on_mismatch' action"
   end
 end
 
 do_install = reinstall || !current
+
+puts "do_install is #{do_install}, reinstall is #{reinstall}"
 
 if do_install then 
   if node['mediaflux']['accept_license_agreement'] != true then

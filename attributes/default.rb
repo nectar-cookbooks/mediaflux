@@ -72,8 +72,10 @@ node.default['mediaflux']['backup_wrapper'] = 'tar_gz_wrapper'
 # template variable.
 node.default['mediaflux']['stores'] = []
 
-# This says to reinstall (e.g. upgrade) the Mediaflux installation.
-node.default['mediaflux']['reinstall'] = false
+# This says what to do when the current Mediaflux installation's version
+# doesn't satisfy the required constraints.  Options are 'fail', 'warn',
+# 'reinstall_upgrade' and 'reinstall_force'
+node.default['mediaflux']['on_mismatch'] = 'fail'
 
 # This workaround comes from CHEF-4234.  It forces the "java" recipe attributes
 # to be reloaded, and the ones that interpolate the above to be re-evaluated.
