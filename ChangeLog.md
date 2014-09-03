@@ -1,5 +1,9 @@
 Change Log for the Mediaflux cookbook
 =====================================
+Version 0.9.16
+--------------
+ - Put the Mediaflux version detection login into a helper method.
+
 Version 0.9.15
 --------------
  - Rework the Mediaflux upgrade support. The 'reinstall' attribute is
