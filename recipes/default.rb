@@ -29,7 +29,7 @@
 
 require 'chef/version_constraint'
 
-::Chef::Recipe.send(:include, MfyluxHelpers)
+::Chef::Recipe.send(:include, MfluxHelpers)
 
 include_recipe "mediaflux::common"
 include_recipe "mediaflux::logwatch"
