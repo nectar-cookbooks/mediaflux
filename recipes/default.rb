@@ -29,6 +29,8 @@
 
 require 'chef/version_constraint'
 
+::Chef::Recipe.send(:include, MFluxHelpers)
+
 include_recipe "mediaflux::common"
 include_recipe "mediaflux::logwatch"
 include_recipe 'mediaflux::installer_cache'
@@ -134,13 +136,7 @@ if url then
   end
 end
 
-current = nil
-if File.exists?("#{mflux_home}/PACKAGE.MF") then
-  contents = File.read("#{mflux_home}/PACKAGE.MF")
-  m = /^Version:\s*([0-9.]+)/.match(contents)
-  raise "No 'Version:' line in #{mflux_home}/PACKAGE.MF file" unless m
-  current = m[1]
-end
+current = getInstalledMediafluxVersion(mflux_home)
 
 reinstall = false
 if current && version != current then
@@ -174,8 +170,6 @@ end
 
 do_install = reinstall || !current
 
-puts "do_install is #{do_install}, reinstall is #{reinstall}"
-
 if do_install then 
   if node['mediaflux']['accept_license_agreement'] != true then
     raise 'You must either run the Mediaflux installer by hand' + 
@@ -189,6 +183,7 @@ if do_install then
       action :stop
     end
   end
+
   bash "install-mediaflux" do 
     code <<-EOH
 java -jar #{installers}/#{installer} nogui << EOF

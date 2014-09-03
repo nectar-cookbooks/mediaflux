@@ -30,4 +30,16 @@ module MfluxHelpers
   def fillIn(arg, default) 
     ( if arg && arg != '' then arg else default end )
   end
+
+  def getInstalledMediafluxVersion(home)
+    if File.exists?("#{home}/PACKAGE.MF") then
+      contents = File.read("#{home}/PACKAGE.MF")
+      m = /^Version:\s*([0-9.]+)/.match(contents)
+      raise "No 'Version:' line in #{home}/PACKAGE.MF file" unless m
+      return m[1]
+    else
+      return nil
+    end
+  end
+
 end
