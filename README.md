@@ -68,6 +68,7 @@ See `attributes/default.rb` for the default values.
 * `node['mediaflux']['installer_url']` - Specifies the full URL for downloading the specific Mediaflux installer.  By default this is unset (nil).
 * `node['mediaflux']['download_base_url']` - Specifies the base URL for downloading the specific Mediaflux installer.  By default this is unset (nil).
 * `node['mediaflux']['accept_license_agreement']` - Set this to true to signify that you accept the Mediaflux license agreement embedded in the installer.
+* `node['mediaflux']['on_version_mismatch']` This tells the recipe what to do if it detects that the currently installed Mediaflux is different to the requested version.  The default value is 'fail'.  See the Upgrading section for details of the other settings.
 * `node['mediaflux']['host']` - The server's hostname.  If unspecified,  this defaults to `'localhost'`.
 * `node['mediaflux']['http_port']` - Specifies the port for the Mediaflux server's http listener.  If unset, the server won't start an http listener.
 * `node['mediaflux']['https_port']` - Specifies the port for the Mediaflux server's https listener.  If unset, the server won't start an https listener.  Note that for https to work, you also need to create or obtain a suitable SSL certificate.  The recipe will bail out if a certificate is required and none is available; e.g. in the 'installers' directory.
@@ -132,10 +133,30 @@ Please note:
    satisfied the requirements of your DaRIS version.  This is not currently
    checked.
 
- * At this point in time, the recipe will not automatically upgrade the 
-   Mediaflux install.  To force an upgrade (actually, re-install into the
-   existing "/opt/mflux" tree), you need to set 'reinstall' to true.  
-   **Make sure that your backups are up to date first!**
+Upgrading Mediaflux
+===================
+
+The recipe will not automatically upgrade the Mediaflux install.  Instead,
+the default behaviour is to check the currently installed Mediaflux version 
+against the requested version, and **fail** if they are not the same.  This
+behaviour can be modified via the 'on_version_mismatch' attribute:
+
+ * `fail` causes the recipe to fail.
+ * `warn` causes the recipe to output a "loud" warning, and continue.  The 
+   Mediaflux installation is not modified.
+ * `upgrade` causes the recipe to do an in-place reinstall of Mediaflux,
+   provided that the requested version is newer than the current version.
+   If the requested version is older, the recipe fails.
+ * `force_reinstall` causes in in-place reinstall, irrespective of the 
+   versions.
+
+Note that there is a risk that a reinstall could break an existing installation
+and / or damage the Mediaflux database and data stores.
+   
+**Make sure that your backups are up to date before you upgrade!**
+
+And when you are finished upgrading, remember to change the 'on_mismatch' 
+attribute back to 'fail' ... to prevent accidents!
 
 Java installation details
 =========================

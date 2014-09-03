@@ -147,11 +147,11 @@ if current && version != current then
   message = 
     "***************************************************************\n" +
     "The currently installed Mediaflux version (#{current}) does not \n" +
-    "match the requested version (#{version}).  Set the 'on_mismatch' \n" +
+    "match the requested version (#{version}).  Set the 'on_version_mismatch' \n" +
     "attribute to 'upgrade' or 'force_reinstall' to perform a reinstall.\n" +
     "A full Mediaflux backup is strongly advised before you do this.\n" +
     "***************************************************************"
-  case node['mediaflux']['on_mismatch']
+  case node['mediaflux']['on_version_mismatch'] || 'fail'
   when 'fail'
     raise message
   when 'warn'
@@ -168,7 +168,7 @@ if current && version != current then
   when 'force_reinstall'
     reinstall = true
   else
-    raise "unrecognized 'on_mismatch' action"
+    raise "unknown 'on_version_mismatch' value"
   end
 end
 

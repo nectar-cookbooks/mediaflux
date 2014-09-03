@@ -1,5 +1,10 @@
 Change Log for the Mediaflux cookbook
 =====================================
+Version 0.9.15
+--------------
+ - Rework the Mediaflux upgrade support. The 'reinstall' attribute is
+   replaced by 'on_version_mismatch'.
+
 Version 0.9.14
 --------------
  - Rework the installer selection attributes: Note - you >>may<<
